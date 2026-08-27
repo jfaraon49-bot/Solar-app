@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Panel Guide | Components & Prices</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --sun-yellow: #f9d71c;
+            --solar-blue: #0a4b78;
+            --leaf-green: #2ecc71;
+            --light-gray: #f5f5f5;
+            --dark: #2c3e50;
+            --danger: #e74c3c;
+        }
+
+        body {
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #fff;
+        }
+
+        nav {
+            background: var(--solar-blue);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span { color: var(--sun-yellow); }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--sun-yellow); }
+
+        .menu-toggle { display: none; color: white; font-size: 1.8rem; cursor: pointer; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--solar-blue) 0%, #1565c0 100%);
+            color: white;
+            padding: 4rem 5%;
+            text-align: center;
+        }
+
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; max-width: 800px; margin: 0 auto; opacity: 0.9; }
+
+        section { padding: 3rem 5%; }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2.5rem;
+            color: var(--solar-blue);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--sun-yellow);
+            margin: 0.5rem auto 0;
+            border-radius: 2px;
+        }
+
+        /* Components Table */
+        .components-table {
+            overflow-x: auto;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--solar-blue);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        tr:hover { background: #f9f9f9; }
+
+        .price { font-weight: bold; color: var(--leaf-green); font-size: 1.1rem; }
+        .btn-shop {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            background: var(--sun-yellow);
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+        }
+        .btn-shop:hover {
+            background: #f8ca00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .specs { font-size: 0.85rem; color: #666; margin-top: 0.3rem; line-height: 1.5; }
+
+        .comp-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .note-box {
+            max-width: 1100px;
+            margin: 2rem auto 0;
+            padding: 1.2rem;
+            background: #fff9e6;
+            border-left: 4px solid var(--sun-yellow);
+            border-radius: 5px;
+        }
+
+        .note-box h4 { color: #b38600; margin-bottom: 0.5rem; }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 5%;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--solar-blue);
+                flex-direction: column;
+                padding: 1rem 5%;
+                gap: 1rem;
+                display: none;
+            }
+            .nav-links.active { display: flex; }
+            .menu-toggle { display: block; }
+            table th, table td { padding: 0.7rem 0.5rem; font-size: 0.9rem; }
+            .btn-shop { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+            .comp-img { width: 70px; height: 70px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">☀️ <span>Solar</span>Shop</div>
+        <div class="menu-toggle" id="menuToggle">☰</div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#components">Components & Prices</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <h1>Solar Panel Components — Price Guide</h1>
+        <p>Complete list of parts with current prices (₱), images, and direct shop links. Updated August 2026 — Philippines Market.</p>
+    </section>
+
+    <!-- Components Table -->
+    <section id="components">
+        <h2 class="section-title">Component List & Prices</h2>
+        <div class="components-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Component</th>
+                        <th>Specifications</th>
+                        <th>Price (₱)</th>
+                        <th>Where to Buy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- LiFePO4 Battery -->
+                    <tr>
+                        <td>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/12V_200Ah_lithium_iron_phosphate_battery.jpg/320px-12V_200Ah_lithium_iron_phosphate_battery.jpg" 
+                                 alt="LiFePO4 Battery" class="comp-img">
+                        </td>
+                        <td><strong>LiFePO4 Battery</strong><br>(Lithium Iron Phosphate)</td>
+                        <td>
+                            12.8V / 25.6V / 51.2V options<br>
+                            Built-in BMS Protection<br>
+                            40Ah / 50Ah / 100Ah / 200Ah<br>
+                            4,000–6,000+ cycle life, IP65
+                            <div class="specs">12V 50Ah: ₱8,500–₱12,000<br>
+                            12V 100Ah: ₱14,000–₱24,000<br>
+                            12V 200Ah: ₱20,000–₱35,000<br>
+                            24V 100Ah: ₱28,000–₱45,000</div>
+                        </td>
+                        <td class="price">₱8,500 – ₱76,800</td>
+                        <td>
+                            <a href="https://shopee.ph" target="_blank" class="btn-shop">Shopee</a>
+                            <a href="https://www.lazada.com.ph" target="_blank" class="btn-shop">Lazada</a>
+                            <a href="https://www.pinas.solar" target="_blank" class="btn-shop">Pinas.Solar</a>
+                            <a href="https://cstenergy.ph" target="_blank" class="btn-shop">CST Energy</a>
+                        </td>
+                    </tr>
+
+                    <!-- MPPT Charge Controller -->
+                    <tr>
+                        <td>
+                            <img src="https://images.unsplash.com/photo-1591696331093-3b4294226b68?w=150&h=150&fit=crop" 
+                                 alt="MPPT Charge Controller" class="comp-img">
+                        </td>
+                        <td><strong>MPPT Charge Controller</strong></td>
+                        <td>
+                            ELEJOY / AOYANG / BOSCA<br>
+                            12V/24V Auto, 10A–60A<br>
+                            High efficiency ≥99%
+                            <div class="specs">Models: CM-D10 (10A), HM6048 (60A), EMD60A</div>
+                        </td>
+                        <td class="price">₱635 – ₱4,628</td>
+                        <td>
+                            <a href="https://shopee.ph" target="_blank" class="btn-shop">Shopee</a>
+                            <a href="https://www.lazada.com.ph" target="_blank" class="btn-shop">Lazada</a>
+                            <a href="https://www.powercentral.ph" target="_blank" class="btn-shop">Power Central</a>
+                        </td>
+                    </tr>
+
+                    <!-- Solar Panel -->
+                    <tr>
+                        <td>
+                            <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=150&h=150&fit=crop" 
+                                 alt="Solar Panel" class="comp-img">
+                        </td>
+                        <td><strong>Solar Panel</strong></td>
+                        <td>
+                            Monocrystalline, Grade A<br>
+                            100W / 200W / 220W / 400W options<br>
+                            IP67 Waterproof, 12V/18V
+                            <div class="specs">BOSCA 220W: ₱5,289; 200W: ₱3,800–₱4,400; 100W: ₱3,794</div>
+                        </td>
+                        <td class="price">₱3,794 – ₱7,999</td>
+                        <td>
+                            <a href="https://www.lazada.com.ph" target="_blank" class="btn-shop">Lazada</a>
+                            <a href="https://shopee.ph" target="_blank" class="btn-shop">Shopee</a>
+                            <a href="https://www.carousell.ph" target="_blank" class="btn-shop">Carousell</a>
+                        </td>
+                    </tr>
+
+                    <!-- Silicone Wire -->
+                    <tr>
+                        <td>
+                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=150&h=150&fit=crop" 
+                                 alt="Silicone Wire" class="comp-img">
+                        </td>
+                        <td><strong>Silicone Wire</strong></td>
+                        <td>
+                            Flexible Tinned Copper, 600V<br>
+                            12AWG / 14AWG / 16AWG / 22AWG<br>
+                            Heat-resistant: -60°C to +200°C
+                            <div class="specs">22AWG: ₱19/m; 12AWG: ₱140/m; 10AWG: ₱460/m</div>
+                        </td>
+                        <td class="price">₱19 – ₱460 / meter</td>
+                        <td>
+                            <a href="https://shopee.ph" target="_blank" class="btn-shop">Shopee</a>
+                            <a href="https://circuit.rocks" target="_blank" class="btn-shop">CircuitRocks</a>
+                            <a href="https://www.lazada.com.ph" target="_blank" class="btn-shop">Lazada</a>
+                        </td>
+                    </tr>
+
+                    <!-- Buck Converter -->
+                    <tr>
+                        <td>
+                            <img src="https://images.unsplash.com/photo-1562408590-e32931084e23?w=150&h=150&fit=crop" 
+                                 alt="Buck Converter" class="comp-img">
+                        </td>
+                        <td><strong>Buck Converter</strong></td>
+                        <td>
+                            LM2596 / MP1584EN / XL4015<br>
+                            DC-DC Step-Down, Adjustable<br>
+                            3A–5A Output, 4.5V–36V Input
+                            <div class="specs">MP1584EN: ₱29; LM2596: ₱69; XL4015 (5A): ₱89</div>
+                        </td>
+                        <td class="price">₱29 – ₱125</td>
+                        <td>
+                            <a href="https://circuit.rocks" target="_blank" class="btn-shop">CircuitRocks</a>
+                            <a href="https://www.plusivo.ph" target="_blank" class="btn-shop">Plusivo</a>
+                            <a href="https://fulabs.ph" target="_blank" class="btn-shop">Fu-labs</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="note-box">
+            <h4>📌 Important Notes:</h4>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                <li><strong>LiFePO4 Battery:</strong> Longer life (4,000–6,000 cycles vs 500 for lead-acid), safer, lighter, and can be discharged deeper (80–90%). Always use with built-in BMS protection.</li>
+                <li><strong>Prices:</strong> Based on current market listings (Aug 2026). May vary with promotions, COD fees, and shipping.</li>
+                <li><strong>MPPT:</strong> Always choose an MPPT controller rated ≥120% of your panel's max current for safety.</li>
+                <li><strong>Wire Gauge:</strong> Use thicker wire (lower AWG number) for longer distances — 12AWG minimum for solar panel connections.</li>
+                <li><strong>Verification:</strong> Buy from sellers with 4.5+ star ratings and many reviews to avoid counterfeit parts.</li>
+                <li><strong>Links:</strong> Buttons go to the store's main site — search the component name to find the exact item.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="about">
+        <p>☀️ Solar Component Price Guide | Data updated: August 2026</p>
+        <p>Market sources: Shopee PH, Lazada PH, CST Energy, Pinas.Solar, CircuitRocks, Power Central, Plusivo, Fu-labs</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => navLinks.classList.remove('active'));
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
