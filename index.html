@@ -3,274 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Guide — Gmail Recovery</title>
+    <title>Solar Guide — Mini Setup</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
-        * {margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif;}
-        body {
-            background: linear-gradient(135deg, #4285F4 0%, #EA4335 50%, #FBBC05 100%);
-            min-height:100vh; padding:20px;
-        }
-        .auth-box {
-            background:#fff; border-radius:16px;
-            box-shadow:0 10px 40px rgba(0,0,0,0.2);
-            max-width:420px; margin:30px auto; overflow:hidden;
-        }
-        .tabs {display:flex;}
-        .tab {
-            flex:1; padding:14px; text-align:center;
-            font-size:17px; font-weight:bold; cursor:pointer;
-            border-bottom:3px solid transparent; transition:all 0.3s;
-        }
-        .tab.active {border-bottom-color:#4285F4; color:#4285F4; background:#f0f7ff;}
-        .form-wrap {padding:28px;}
-        .form {display:none;}
-        .form.active {display:block;}
-        h2 {text-align:center; color:#2c3e50; margin-bottom:22px; font-size:22px;}
-        .group {margin-bottom:15px;}
-        label {display:block; margin-bottom:5px; color:#555; font-weight:500;}
-        input {
-            width:100%; padding:11px 14px;
-            border:2px solid #e0e0e0; border-radius:8px; font-size:15px;
-        }
-        input:focus {outline:none; border-color:#4285F4;}
-        button {
-            width:100%; padding:13px; background:#4285F4; color:#fff;
-            border:none; border-radius:8px; font-size:17px; font-weight:bold;
-            cursor:pointer; margin-top:5px; transition:transform 0.2s;
-        }
-        button:hover {transform:scale(1.02); background:#3367D6;}
-        .gmail-btn {background:#EA4335;}
-        .gmail-btn:hover {background:#D93025;}
-        .link {text-align:center; margin-top:15px; font-size:14px; color:#4285F4; cursor:pointer; text-decoration:underline;}
-        .msg {margin-top:14px; text-align:center; font-size:14px; min-height:22px;}
-        .ok {color:#27ae60;}
-        .err {color:#e74c3c;}
-        .hidden {display:none !important;}
+        *{box-sizing:border-box; font-family:Arial, sans-serif; margin:0; padding:0;}
+        body{background:linear-gradient(135deg, #ff9500, #ff5e3a, #ff2d95); min-height:100vh; padding:20px;}
+        
+        /* Auth Tabs */
+        .auth-container{max-width:420px; margin:0 auto 40px; background:#fff; border-radius:20px; box-shadow:0 8px 32px rgba(0,0,0,.2); overflow:hidden;}
+        .tabs{display:flex; background:#f5f5f5;}
+        .tab{flex:1; padding:16px; text-align:center; font-weight:bold; cursor:pointer; border:none; background:transparent; font-size:18px;}
+        .tab.active{background:#fff; color:#ff6a00; border-bottom:3px solid #ff6a00;}
+        .tab-content{padding:25px; display:none;}
+        .tab-content.active{display:block;}
+        input{width:100%; padding:14px; margin:10px 0; border:1px solid #ddd; border-radius:10px; font-size:16px;}
+        button{width:100%; padding:14px; border:none; border-radius:10px; font-size:17px; font-weight:bold; cursor:pointer; transition:.3s;}
+        .btn-primary{background:linear-gradient(90deg, #ff9500, #ff5e00); color:white; margin-top:8px;}
+        .btn-primary:hover{transform:scale(1.02);}
+        .btn-reset{background:#0066ff; color:white; margin-top:8px;}
+        .msg{margin-top:12px; font-size:15px; min-height:24px;}
+        .msg.success{color:green;}
+        .msg.error{color:red;}
+        .back-link{display:inline-block; margin-top:15px; color:#0066ff; text-decoration:none; font-size:15px;}
 
-        /* === SOLAR DASHBOARD === */
-        #solarPage {max-width:850px; margin:0 auto; display:none;}
-        .header {
-            background:#fff; padding:25px; border-radius:16px;
-            box-shadow:0 8px 30px rgba(0,0,0,0.15); margin-bottom:25px;
-        }
-        .header h1 {color:#4285F4; text-align:center; font-size:28px; margin-bottom:10px;}
-        .user-badge {
-            background:#e8f0fe; color:#4285F4; padding:10px 18px;
-            border-radius:25px; display:inline-block; margin-bottom:15px; font-weight:bold;
-        }
-        .logout {background:#e74c3c; color:#fff; border:none; padding:10px 20px;
-            border-radius:8px; font-size:16px; cursor:pointer; margin-bottom:20px;}
-        .sec {
-            background:#fff; padding:25px; border-radius:12px;
-            box-shadow:0 4px 15px rgba(0,0,0,0.08); margin-bottom:20px;
-        }
-        .sec h2 {text-align:left; color:#16a34a; border-bottom:2px solid #86efac;
-            padding-bottom:8px; margin-bottom:18px;}
-        table {width:100%; border-collapse:collapse; margin-top:15px;}
-        th, td {padding:12px; text-align:left; border-bottom:1px solid #eee;}
-        th {background:#16a34a; color:#fff;}
-        .shop {
-            background:#3b82f6; color:#fff; padding:5px 12px;
-            border-radius:5px; text-decoration:none; font-size:14px;
-            display:inline-block; margin:2px;
-        }
-        .step {
-            margin:18px 0; padding:15px; background:#f0fdf4;
-            border-radius:8px; border-left:4px solid #16a34a;
-        }
-        .n {font-weight:bold; color:#16a34a; font-size:1.2em; margin-right:8px;}
-        .tl {color:#4b5563; font-style:italic; margin-top:5px;}
+        /* Solar Content */
+        .solar-container{max-width:800px; margin:0 auto; background:#fff; border-radius:20px; padding:30px; box-shadow:0 8px 32px rgba(0,0,0,.2); display:none;}
+        .solar-container.active{display:block;}
+        h1{color:#ff6a00; text-align:center; margin-bottom:25px;}
+        h2{color:#333; margin:20px 0 10px;}
+        .step{margin:15px 0; padding:15px; background:#fff8f0; border-radius:12px; border-left:4px solid #ff9500;}
+        .part{display:flex; align-items:center; gap:12px; margin:10px 0; padding:10px; background:#f9f9f9; border-radius:8px;}
+        .logout{background:#e53935; color:white; margin-bottom:20px;}
+        .hidden{display:none !important;}
     </style>
 </head>
 <body>
 
-<!-- === LOGIN / REGISTER / RECOVERY === -->
-<div class="auth-box" id="authBox">
-    <div class="tabs">
-        <div class="tab active" onclick="tabTo('login')">Login</div>
-        <div class="tab" onclick="tabTo('reg')">Register</div>
-        <div class="tab" onclick="tabTo('rec')">Recovery</div>
-    </div>
-    <div class="form-wrap">
+    <!-- ============= LOGIN / REGISTER / RECOVERY ============= -->
+    <div class="auth-container" id="authBox">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">Login</button>
+            <button class="tab" onclick="switchTab('register')">Register</button>
+            <button class="tab" onclick="switchTab('recovery')">Recovery</button>
+        </div>
+
         <!-- LOGIN -->
-        <div class="form active" id="login">
-            <h2>🔐 Member Login</h2>
-            <div class="group"><label>Gmail or Username</label><input type="text" id="logUser" placeholder="yourname@gmail.com"></div>
-            <div class="group"><label>Password</label><input type="password" id="logPass" placeholder="Your password"></div>
-            <button onclick="doLogin()">Login & View Solar Guide</button>
-            <div class="msg" id="logMsg"></div>
-            <p class="link" onclick="tabTo('rec')">Forgot Password?</p>
+        <div class="tab-content active" id="tab-login">
+            <h2>🔐 Login</h2>
+            <input type="email" id="loginEmail" placeholder="Email Address">
+            <input type="password" id="loginPass" placeholder="Password">
+            <button class="btn-primary" onclick="loginUser()">Sign In</button>
+            <div class="msg" id="loginMsg"></div>
         </div>
 
         <!-- REGISTER -->
-        <div class="form" id="reg">
-            <h2>📝 Create Account</h2>
-            <div class="group"><label>Full Name</label><input type="text" id="rName" placeholder="Your full name"></div>
-            <div class="group"><label>Gmail Address</label><input type="email" id="rMail" placeholder="yourname@gmail.com"></div>
-            <div class="group"><label>Username</label><input type="text" id="rUser" placeholder="Choose username"></div>
-            <div class="group"><label>Password (min 6)</label><input type="password" id="rPass" placeholder="Create password"></div>
-            <div class="group"><label>Confirm Password</label><input type="password" id="rPass2" placeholder="Repeat password"></div>
-            <button onclick="doReg()">Create Account</button>
-            <div class="msg" id="rMsg"></div>
+        <div class="tab-content" id="tab-register">
+            <h2>📝 Register Account</h2>
+            <input type="email" id="regEmail" placeholder="Email Address">
+            <input type="password" id="regPass" placeholder="Password (min 6 chars)">
+            <button class="btn-primary" onclick="registerUser()">Create Account</button>
+            <div class="msg" id="regMsg"></div>
         </div>
 
-        <!-- RECOVERY -->
-        <div class="form" id="rec">
-            <h2>📧 Gmail Recovery</h2>
-            <div class="group"><label>Your Gmail</label><input type="email" id="rMailIn" placeholder="yourname@gmail.com"></div>
-            <p style="font-size:14px; color:#666; margin:10px 0;">We'll open Gmail so you can send yourself your account details.</p>
-            <button class="gmail-btn" onclick="sendRec()">📩 Send Recovery via Gmail</button>
-            <div class="msg" id="recMsg"></div>
-            <p class="link" onclick="tabTo('login')">Back to Login</p>
+        <!-- RECOVERY — WORKING FIREBASE RESET -->
+        <div class="tab-content" id="tab-recovery">
+            <h2>🔑 Forgot Password</h2>
+            <p>Enter your registered email — we'll send a reset link.</p>
+            <input type="email" id="resetEmail" placeholder="yourname@gmail.com">
+            <button class="btn-reset" onclick="sendResetEmail()">📧 Send Reset Link</button>
+            <div class="msg" id="resetMsg"></div>
+            <a href="#" class="back-link" onclick="switchTab('login'); return false;">← Back to Login</a>
         </div>
     </div>
-</div>
 
-<!-- === SOLAR GUIDE — ONLY AFTER LOGIN === -->
-<div id="solarPage">
-    <div class="header">
-        <span class="user-badge">👤 Welcome, <span id="uName"></span>!</span>
-        <button class="logout" onclick="bye()">🚪 Logout</button>
+    <!-- ============= SOLAR GUIDE — ONLY SHOWS AFTER LOGIN ============= -->
+    <div class="solar-container hidden" id="solarContent">
+        <button class="logout" onclick="logoutUser()">🚪 Logout</button>
         <h1>☀️ Mini Solar Power Setup Guide</h1>
-        <p style="text-align:center; color:#666;">Step-by-Step — English + Tagalog</p>
-    </div>
 
-    <div class="sec">
-        <h2>🛒 Components, Prices & Where to Buy</h2>
-        <table>
-            <tr><th>Component</th><th>Price (₱)</th><th>Shop Links</th></tr>
-            <tr><td>🌞 Solar Panel 100W</td><td>₱2,800 – ₱3,500</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
-            <tr><td>⚡ MPPT Charge Controller 30A</td><td>₱850 – ₱1,200</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
-            <tr><td>🔋 LiFePO4 Battery 12V 50Ah</td><td>₱4,500 – ₱5,500</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
-            <tr><td>📉 Buck Converter</td><td>₱150 – ₱300</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
-            <tr><td>🔌 Solar Cable 10m</td><td>₱180 – ₱350</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
-        </table>
-    </div>
+        <h2>🛒 Components & Prices (PH Estimates)</h2>
+        <div class="part"><strong>1.</strong> Solar Panel 100W — ₱1,800–₱2,500 | <a href="https://shopee.ph" target="_blank">Buy →</a></div>
+        <div class="part"><strong>2.</strong> LiFePO4 Battery 12V 50Ah — ₱3,500–₱4,500 | <a href="https://shopee.ph" target="_blank">Buy →</a></div>
+        <div class="part"><strong>3.</strong> MPPT Charge Controller — ₱800–₱1,500 | <a href="https://shopee.ph" target="_blank">Buy →</a></div>
+        <div class="part"><strong>4.</strong> Buck Converter 12V→5V — ₱150–₱300 | <a href="https://shopee.ph" target="_blank">Buy →</a></div>
+        <div class="part"><strong>5.</strong> Silicone Wire 12AWG — ₱15–₱30/meter | <a href="https://shopee.ph" target="_blank">Buy →</a></div>
 
-    <div class="sec">
-        <h2>🔧 Step-by-Step Installation</h2>
-        <div class="step"><span class="n">1</span><strong>Prepare all components & tools</strong><p class="tl">Ihanda ang lahat ng piyesa — solar panel, MPPT, baterya, kawad, buck converter.</p></div>
-        <div class="step"><span class="n">2</span><strong>Connect Solar Panel → MPPT Controller</strong><p class="tl">Ikonekta panel sa MPPT. Sundin polarity: (+) sa (+), (-) sa (-).</p></div>
-        <div class="step"><span class="n">3</span><strong>Connect MPPT → LiFePO4 Battery</strong><p class="tl">Ikonekta MPPT output sa baterya. Siguraduhing tama ang polarity.</p></div>
-        <div class="step"><span class="n">4</span><strong>Connect Battery → Buck Converter → Devices</strong><p class="tl">Mula baterya, dumaan sa buck converter para tamang boltahe sa gamit.</p></div>
-        <div class="step"><span class="n">5</span><strong>Test & Monitor</strong><p class="tl">Subukan ang sistema. Tingnan ang display ng MPPT para sa boltahe at karga.</p></div>
-    </div>
+        <h2>📋 Step-by-Step Setup</h2>
+        <div class="step">
+            <strong>Step 1 — Prepare Panel ⚡</strong><br>
+            <em>Ikabit ang solar panel sa lugar na may direktang sikat ng araw.</em><br>
+            Mount the panel facing the sun (south, 30° tilt). Ensure no shade.
+        </div>
+        <div class="step">
+            <strong>Step 2 — Connect MPPT Controller 🔌</strong><br>
+            <em>Ikonekta ang solar panel sa MPPT charge controller (PV terminals).</em><br>
+            Panel → MPPT (PV side). Observe polarity (+/-).
+        </div>
+        <div class="step">
+            <strong>Step 3 — Connect Battery 🔋</strong><br>
+            <em>Ikonekta ang LiFePO4 battery sa MPPT (Battery terminals).</em><br>
+            Battery → MPPT (Batt side). MPPT regulates charging automatically.
+        </div>
+        <div class="step">
+            <strong>Step 4 — Add Load / Devices 📱</strong><br>
+            <em>Ikonekta ang buck converter o devices sa load terminals ng MPPT.</em><br>
+            Use buck converter to step down 12V → 5V for phones/LED lights.
+        </div>
+        <div class="step">
+            <strong>Step 5 — Test & Monitor ✅</strong><br>
+            <em>Check kung nagcha-charge at gumagana ang mga devices.</em><br>
+            MPPT shows voltage & charging status. Keep wires short & secure.
+        </div>
 
-    <div class="sec" style="background:#fef9e7;">
-        <h2>💡 Tips</h2>
-        <ul style="margin-left:20px; line-height:2;">
-            <li>☀️ Panel facing direct sunlight — no shade!</li>
-            <li>🇵🇭 Sa Pinas: Iharap pakanluran/timog para sa pinakamagandang sikat.</li>
-            <li>🔋 Check voltage before connecting — avoid short circuits!</li>
-            <li>🌧️ Keep connections dry — use waterproofing outdoors!</li>
+        <h2>⚠️ Safety Tips</h2>
+        <ul style="margin-left:20px; line-height:1.8;">
+            <li>Always connect battery FIRST before panel if MPPT allows.</li>
+            <li>Observe correct polarity — reverse = damage!</li>
+            <li>Use proper gauge wire — thicker = better for long runs.</li>
+            <li>LiFePO4 is safer than Lead-Acid — still avoid overcharging.</li>
         </ul>
     </div>
-</div>
 
-<script>
-// === TAB SWITCH ===
-function tabTo(tab) {
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.form').forEach(f=>f.classList.remove('active'));
-    if (tab==='login') {document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('login').classList.add('active');}
-    if (tab==='reg') {document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('reg').classList.add('active');}
-    if (tab==='rec') {document.querySelectorAll('.tab')[2].classList.add('active'); document.getElementById('rec').classList.add('active');}
-    clearAllMsg();
-}
-function clearAllMsg() {
-    document.getElementById('logMsg').textContent='';
-    document.getElementById('rMsg').textContent='';
-    document.getElementById('recMsg').textContent='';
-}
+    <!-- ============= FIREBASE CONFIG — YOUR REAL CONFIG! ============= -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPQ-iN9GQlV0MCAM5Ju82g91Ch65iyJLA",
+            authDomain: "solar-app-edd21.firebaseapp.com",
+            projectId: "solar-app-edd21",
+            storageBucket: "solar-app-edd21.firebasestorage.app",
+            messagingSenderId: "463683269857",
+            appId: "1:463683269857:web:e845196f2c4324b6c2b3a0",
+            measurementId: "G-49PN6J6V7Y"
+        };
 
-// === REGISTER ===
-function doReg() {
-    const n = document.getElementById('rName').value.trim();
-    const e = document.getElementById('rMail').value.trim().toLowerCase();
-    const u = document.getElementById('rUser').value.trim().toLowerCase();
-    const p = document.getElementById('rPass').value;
-    const p2 = document.getElementById('rPass2').value;
-    const m = document.getElementById('rMsg');
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-    if (!n||!e||!u||!p||!p2) {m.textContent='❌ Fill ALL fields!'; m.className='msg err'; return;}
-    if (!e.includes('@gmail.com')) {m.textContent='❌ Use Gmail only!'; m.className='msg err'; return;}
-    if (p.length<6) {m.textContent='❌ Password min 6 chars!'; m.className='msg err'; return;}
-    if (p!==p2) {m.textContent='❌ Passwords do not match!'; m.className='msg err'; return;}
+        // ========== TAB SWITCHING ==========
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
 
-    let users = JSON.parse(localStorage.getItem('solarUsers')||'[]');
-    if (users.find(x=>x.email===e)) {m.textContent='❌ Gmail already registered!'; m.className='msg err'; return;}
-    if (users.find(x=>x.username===u)) {m.textContent='❌ Username taken!'; m.className='msg err'; return;}
+        // ========== LOGIN ==========
+        function loginUser() {
+            const email = document.getElementById("loginEmail").value;
+            const pass = document.getElementById("loginPass").value;
+            const msg = document.getElementById("loginMsg");
 
-    users.push({name:n, email:e, user:u, pass:p});
-    localStorage.setItem('solarUsers', JSON.stringify(users));
-    m.textContent='✅ Account Created! Login now!'; m.className='msg ok';
-    setTimeout(()=>tabTo('login'),2000);
-}
+            auth.signInWithEmailAndPassword(email, pass)
+                .then(() => showSolarPage())
+                .catch(err => {
+                    msg.textContent = "❌ " + err.message;
+                    msg.className = "msg error";
+                });
+        }
 
-// === LOGIN ===
-function doLogin() {
-    const inp = document.getElementById('logUser').value.trim().toLowerCase();
-    const p = document.getElementById('logPass').value;
-    const m = document.getElementById('logMsg');
-    const users = JSON.parse(localStorage.getItem('solarUsers')||'[]');
-    const found = users.find(x=>(x.email===inp||x.user===inp) && x.pass===p);
+        // ========== REGISTER ==========
+        function registerUser() {
+            const email = document.getElementById("regEmail").value;
+            const pass = document.getElementById("regPass").value;
+            const msg = document.getElementById("regMsg");
 
-    if (found) {
-        localStorage.setItem('solarSession', JSON.stringify({name:found.name, email:found.email, user:found.user}));
-        showPage(found.name);
-    } else {
-        m.textContent='❌ Wrong email/username or password!'; m.className='msg err';
-    }
-}
+            if (pass.length < 6) {
+                msg.textContent = "❌ Password must be at least 6 characters!";
+                msg.className = "msg error";
+                return;
+            }
 
-// === SHOW SOLAR PAGE ===
-function showPage(name) {
-    document.getElementById('authBox').classList.add('hidden');
-    document.getElementById('solarPage').style.display='block';
-    document.getElementById('uName').textContent=name;
-}
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(userCred => {
+                    msg.textContent = "✅ Account created! Logging in...";
+                    msg.className = "msg success";
+                    // Save user to Firestore
+                    return db.collection("users").doc(userCred.user.uid).set({
+                        email: email,
+                        createdAt: new Date()
+                    });
+                })
+                .then(() => showSolarPage())
+                .catch(err => {
+                    msg.textContent = "❌ " + err.message;
+                    msg.className = "msg error";
+                });
+        }
 
-// === LOGOUT ===
-function bye() {
-    localStorage.removeItem('solarSession');
-    location.reload();
-}
+        // ========== FIREBASE PASSWORD RESET — WORKING! ==========
+        function sendResetEmail() {
+            const email = document.getElementById("resetEmail").value.trim();
+            const msg = document.getElementById("resetMsg");
 
-// === GMAIL RECOVERY ===
-function sendRec() {
-    const e = document.getElementById('rMailIn').value.trim().toLowerCase();
-    const m = document.getElementById('recMsg');
-    const users = JSON.parse(localStorage.getItem('solarUsers')||'[]');
-    const found = users.find(x=>x.email===e);
+            if (!email) {
+                msg.textContent = "❌ Please enter your email!";
+                msg.className = "msg error";
+                return;
+            }
 
-    if (!e) {m.textContent='❌ Enter your Gmail!'; m.className='msg err'; return;}
-    if (!e.includes('@gmail.com')) {m.textContent='❌ Enter valid Gmail!'; m.className='msg err'; return;}
-    if (!found) {m.textContent='❌ Gmail not registered!'; m.className='msg err'; return;}
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    msg.textContent = "✅ Reset link sent! Check your email (including Spam folder)!";
+                    msg.className = "msg success";
+                })
+                .catch(err => {
+                    msg.textContent = "❌ " + err.message;
+                    msg.className = "msg error";
+                });
+        }
 
-    const subj = encodeURIComponent('Solar App — Your Account Details');
-    const body = encodeURIComponent(
-`Hello ${found.name},
+        // ========== SHOW SOLAR PAGE / LOGOUT ==========
+        function showSolarPage() {
+            document.getElementById("authBox").classList.add("hidden");
+            document.getElementById("solarContent").classList.remove("hidden");
+        }
+        function logoutUser() {
+            auth.signOut().then(() => {
+                document.getElementById("authBox").classList.remove("hidden");
+                document.getElementById("solarContent").classList.add("hidden");
+                document.querySelectorAll("input").forEach(i=>i.value="");
+                document.querySelectorAll(".msg").forEach(m=>m.textContent="");
+                switchTab('login');
+            });
+        }
 
-Here are your Solar App details:
-• Username: ${found.user}
-• Email: ${found.email}
-• Password: ${found.pass}
-
-Use these to login. If you want to change password, login then update it.
-
-— Solar Setup App`
-    );
-    window.open(`https://mail.google.com/mail/?view=cm&to=${e}&su=${subj}&body=${body}`, '_blank');
-    m.innerHTML='✅ Gmail opened! Send the email to yourself to see your login details!';
-    m.className='msg ok';
-}
-
-// === AUTO LOGIN ===
-window.onload = function() {
-    const s = JSON.parse(localStorage.getItem('solarSession')||'null');
-    if (s) showPage(s.name);
-};
-</script>
+        // Auto-check login on page load
+        auth.onAuthStateChanged(user => {
+            if (user) showSolarPage();
+        });
+    </script>
 
 </body>
 </html>
