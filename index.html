@@ -3,96 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Solar Setup | Step-by-Step + Shop Links</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <title>Solar Guide — Gmail Recovery</title>
     <style>
-        :root {
-            --solar-yellow: #fdb813;
-            --solar-orange: #ff9500;
-            --dark: #333;
-            --light-gray: #f5f5f5;
-            --accent: #2563eb;
+        * {margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif;}
+        body {
+            background: linear-gradient(135deg, #4285F4 0%, #EA4335 50%, #FBBC05 100%);
+            min-height:100vh; padding:20px;
         }
-        * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif;}
-        body {background: linear-gradient(135deg, #fff9e0, #ffe8b3); min-height: 100vh; padding: 16px; color: var(--dark);}
-        .container {max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);}
-        header {text-align: center; margin-bottom: 28px;}
-        h1 {font-size: 24px; color: var(--solar-orange); margin-bottom: 4px;}
-        .subtitle {color: #777; font-size: 14px;}
-        h2 {font-size: 18px; margin: 28px 0 14px; color: var(--dark); border-left: 4px solid var(--solar-yellow); padding-left: 12px;}
-        
-        /* Steps */
-        .step {margin: 12px 0; padding: 14px; background: #fff9e8; border-radius: 12px;}
-        .step-num {display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--solar-yellow); color: white; border-radius: 50%; font-weight: bold; margin-right: 10px;}
-        .en {font-weight: 600; margin-bottom: 4px;}
-        .tl {font-size: 14px; color: #555; font-style: italic;}
-        
-        /* Components Table */
-        .table-wrapper {overflow-x: auto; border-radius: 12px; border: 1px solid #eee;}
-        table {width: 100%; border-collapse: collapse;}
-        th {background: var(--solar-yellow); color: white; padding: 12px 8px; text-align: left; font-size: 14px;}
-        td {padding: 12px 8px; border-bottom: 1px solid #eee; font-size: 14px;}
-        tr:last-child td {border-bottom: none;}
-        .price {color: #e65c00; font-weight: bold;}
-        .shop-btn {display: inline-block; padding: 6px 12px; background: var(--accent); color: white; border-radius: 6px; text-decoration: none; font-size: 13px; margin: 2px;}
-        .shop-btn:hover {background: #1d4ed8;}
-        
-        /* QR */
-        .qr-box {text-align: center; margin-top: 32px; padding: 24px; background: var(--light-gray); border-radius: 12px;}
-        #qr-canvas {margin-top: 12px; background: white; padding: 12px; border-radius: 8px;}
-        
-        footer {text-align: center; margin-top: 32px; font-size: 13px; color: #888;}
+        .auth-box {
+            background:#fff; border-radius:16px;
+            box-shadow:0 10px 40px rgba(0,0,0,0.2);
+            max-width:420px; margin:30px auto; overflow:hidden;
+        }
+        .tabs {display:flex;}
+        .tab {
+            flex:1; padding:14px; text-align:center;
+            font-size:17px; font-weight:bold; cursor:pointer;
+            border-bottom:3px solid transparent; transition:all 0.3s;
+        }
+        .tab.active {border-bottom-color:#4285F4; color:#4285F4; background:#f0f7ff;}
+        .form-wrap {padding:28px;}
+        .form {display:none;}
+        .form.active {display:block;}
+        h2 {text-align:center; color:#2c3e50; margin-bottom:22px; font-size:22px;}
+        .group {margin-bottom:15px;}
+        label {display:block; margin-bottom:5px; color:#555; font-weight:500;}
+        input {
+            width:100%; padding:11px 14px;
+            border:2px solid #e0e0e0; border-radius:8px; font-size:15px;
+        }
+        input:focus {outline:none; border-color:#4285F4;}
+        button {
+            width:100%; padding:13px; background:#4285F4; color:#fff;
+            border:none; border-radius:8px; font-size:17px; font-weight:bold;
+            cursor:pointer; margin-top:5px; transition:transform 0.2s;
+        }
+        button:hover {transform:scale(1.02); background:#3367D6;}
+        .gmail-btn {background:#EA4335;}
+        .gmail-btn:hover {background:#D93025;}
+        .link {text-align:center; margin-top:15px; font-size:14px; color:#4285F4; cursor:pointer; text-decoration:underline;}
+        .msg {margin-top:14px; text-align:center; font-size:14px; min-height:22px;}
+        .ok {color:#27ae60;}
+        .err {color:#e74c3c;}
+        .hidden {display:none !important;}
+
+        /* === SOLAR DASHBOARD === */
+        #solarPage {max-width:850px; margin:0 auto; display:none;}
+        .header {
+            background:#fff; padding:25px; border-radius:16px;
+            box-shadow:0 8px 30px rgba(0,0,0,0.15); margin-bottom:25px;
+        }
+        .header h1 {color:#4285F4; text-align:center; font-size:28px; margin-bottom:10px;}
+        .user-badge {
+            background:#e8f0fe; color:#4285F4; padding:10px 18px;
+            border-radius:25px; display:inline-block; margin-bottom:15px; font-weight:bold;
+        }
+        .logout {background:#e74c3c; color:#fff; border:none; padding:10px 20px;
+            border-radius:8px; font-size:16px; cursor:pointer; margin-bottom:20px;}
+        .sec {
+            background:#fff; padding:25px; border-radius:12px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.08); margin-bottom:20px;
+        }
+        .sec h2 {text-align:left; color:#16a34a; border-bottom:2px solid #86efac;
+            padding-bottom:8px; margin-bottom:18px;}
+        table {width:100%; border-collapse:collapse; margin-top:15px;}
+        th, td {padding:12px; text-align:left; border-bottom:1px solid #eee;}
+        th {background:#16a34a; color:#fff;}
+        .shop {
+            background:#3b82f6; color:#fff; padding:5px 12px;
+            border-radius:5px; text-decoration:none; font-size:14px;
+            display:inline-block; margin:2px;
+        }
+        .step {
+            margin:18px 0; padding:15px; background:#f0fdf4;
+            border-radius:8px; border-left:4px solid #16a34a;
+        }
+        .n {font-weight:bold; color:#16a34a; font-size:1.2em; margin-right:8px;}
+        .tl {color:#4b5563; font-style:italic; margin-top:5px;}
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>☀️ Mini Solar Power Setup</h1>
-            <p class="subtitle">Step-by-Step Guide | Gabay sa Pagbuo</p>
-        </header>
 
-        <h2>📖 Build Guide | Mga Hakbang</h2>
-        
-        <div class="step">
-            <span class="step-num">1</span>
-            <div class="en">Prepare all parts & check voltage ratings</div>
-            <div class="tl">Ihanda ang lahat ng piyesa at suriin ang boltahe</div>
-        </div>
-        <div class="step">
-            <span class="step-num">2</span>
-            <div class="en">Connect Solar Panel → MPPT Charge Controller</div>
-            <div class="tl">Ikabit ang Solar Panel sa MPPT Charge Controller</div>
-        </div>
-        <div class="step">
-            <span class="step-num">3</span>
-            <div class="en">Connect MPPT → LiFePO4 Battery (match polarity + & -)</div>
-            <div class="tl">Ikabit ang MPPT sa Baterya (tandaan ang + at -)</div>
-        </div>
-        <div class="step">
-            <span class="step-num">4</span>
-            <div class="en">Connect Battery → Buck Converter (adjust output voltage)</div>
-            <div class="tl">Ikabit ang Baterya sa Buck Converter (i-adjust ang boltahe)</div>
-        </div>
-        <div class="step">
-            <span class="step-num">5</span>
-            <div class="en">Connect your load → Test & enjoy!</div>
-            <div class="tl">Ikabit ang gamit → Subukan at gamitin na!</div>
+<!-- === LOGIN / REGISTER / RECOVERY === -->
+<div class="auth-box" id="authBox">
+    <div class="tabs">
+        <div class="tab active" onclick="tabTo('login')">Login</div>
+        <div class="tab" onclick="tabTo('reg')">Register</div>
+        <div class="tab" onclick="tabTo('rec')">Recovery</div>
+    </div>
+    <div class="form-wrap">
+        <!-- LOGIN -->
+        <div class="form active" id="login">
+            <h2>🔐 Member Login</h2>
+            <div class="group"><label>Gmail or Username</label><input type="text" id="logUser" placeholder="yourname@gmail.com"></div>
+            <div class="group"><label>Password</label><input type="password" id="logPass" placeholder="Your password"></div>
+            <button onclick="doLogin()">Login & View Solar Guide</button>
+            <div class="msg" id="logMsg"></div>
+            <p class="link" onclick="tabTo('rec')">Forgot Password?</p>
         </div>
 
-        <h2>🛒 Components & Prices | Mga Piyesa at Presyo</h2>
-        <div class="table-wrapper">
-            <table>
-                <tr>
-                    <th>Component</th>
-                    <th>Description</th>
-                    <th>Price (₱)</th>
-                    <th>Shop</th>
-                </tr>
-                <tr>
-                    <td><b>Solar Panel 100W</b></td>
-                    <td>Mono-crystalline</td>
-                    <td class="price">₱1,800–2,500</td>
-                    <td>
-                        <a href="https://shopee.ph/search?keyword=100W%20mono%20solar%20panel" target="_blank" class="shop-btn">Shopee</a>
-                        <a href="https://lazada.com.ph/catalog/?q=100W%20solar%20panel" target="_blank" class="shop-btn">Lazada</a>
-    
+        <!-- REGISTER -->
+        <div class="form" id="reg">
+            <h2>📝 Create Account</h2>
+            <div class="group"><label>Full Name</label><input type="text" id="rName" placeholder="Your full name"></div>
+            <div class="group"><label>Gmail Address</label><input type="email" id="rMail" placeholder="yourname@gmail.com"></div>
+            <div class="group"><label>Username</label><input type="text" id="rUser" placeholder="Choose username"></div>
+            <div class="group"><label>Password (min 6)</label><input type="password" id="rPass" placeholder="Create password"></div>
+            <div class="group"><label>Confirm Password</label><input type="password" id="rPass2" placeholder="Repeat password"></div>
+            <button onclick="doReg()">Create Account</button>
+            <div class="msg" id="rMsg"></div>
+        </div>
+
+        <!-- RECOVERY -->
+        <div class="form" id="rec">
+            <h2>📧 Gmail Recovery</h2>
+            <div class="group"><label>Your Gmail</label><input type="email" id="rMailIn" placeholder="yourname@gmail.com"></div>
+            <p style="font-size:14px; color:#666; margin:10px 0;">We'll open Gmail so you can send yourself your account details.</p>
+            <button class="gmail-btn" onclick="sendRec()">📩 Send Recovery via Gmail</button>
+            <div class="msg" id="recMsg"></div>
+            <p class="link" onclick="tabTo('login')">Back to Login</p>
+        </div>
+    </div>
+</div>
+
+<!-- === SOLAR GUIDE — ONLY AFTER LOGIN === -->
+<div id="solarPage">
+    <div class="header">
+        <span class="user-badge">👤 Welcome, <span id="uName"></span>!</span>
+        <button class="logout" onclick="bye()">🚪 Logout</button>
+        <h1>☀️ Mini Solar Power Setup Guide</h1>
+        <p style="text-align:center; color:#666;">Step-by-Step — English + Tagalog</p>
+    </div>
+
+    <div class="sec">
+        <h2>🛒 Components, Prices & Where to Buy</h2>
+        <table>
+            <tr><th>Component</th><th>Price (₱)</th><th>Shop Links</th></tr>
+            <tr><td>🌞 Solar Panel 100W</td><td>₱2,800 – ₱3,500</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
+            <tr><td>⚡ MPPT Charge Controller 30A</td><td>₱850 – ₱1,200</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
+            <tr><td>🔋 LiFePO4 Battery 12V 50Ah</td><td>₱4,500 – ₱5,500</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
+            <tr><td>📉 Buck Converter</td><td>₱150 – ₱300</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
+            <tr><td>🔌 Solar Cable 10m</td><td>₱180 – ₱350</td><td><a href="https://shopee.ph" class="shop" target="_blank">Shopee</a> <a href="https://lazada.com.ph" class="shop" target="_blank">Lazada</a></td></tr>
+        </table>
+    </div>
+
+    <div class="sec">
+        <h2>🔧 Step-by-Step Installation</h2>
+        <div class="step"><span class="n">1</span><strong>Prepare all components & tools</strong><p class="tl">Ihanda ang lahat ng piyesa — solar panel, MPPT, baterya, kawad, buck converter.</p></div>
+        <div class="step"><span class="n">2</span><strong>Connect Solar Panel → MPPT Controller</strong><p class="tl">Ikonekta panel sa MPPT. Sundin polarity: (+) sa (+), (-) sa (-).</p></div>
+        <div class="step"><span class="n">3</span><strong>Connect MPPT → LiFePO4 Battery</strong><p class="tl">Ikonekta MPPT output sa baterya. Siguraduhing tama ang polarity.</p></div>
+        <div class="step"><span class="n">4</span><strong>Connect Battery → Buck Converter → Devices</strong><p class="tl">Mula baterya, dumaan sa buck converter para tamang boltahe sa gamit.</p></div>
+        <div class="step"><span class="n">5</span><strong>Test & Monitor</strong><p class="tl">Subukan ang sistema. Tingnan ang display ng MPPT para sa boltahe at karga.</p></div>
+    </div>
+
+    <div class="sec" style="background:#fef9e7;">
+        <h2>💡 Tips</h2>
+        <ul style="margin-left:20px; line-height:2;">
+            <li>☀️ Panel facing direct sunlight — no shade!</li>
+            <li>🇵🇭 Sa Pinas: Iharap pakanluran/timog para sa pinakamagandang sikat.</li>
+            <li>🔋 Check voltage before connecting — avoid short circuits!</li>
+            <li>🌧️ Keep connections dry — use waterproofing outdoors!</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+// === TAB SWITCH ===
+function tabTo(tab) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.form').forEach(f=>f.classList.remove('active'));
+    if (tab==='login') {document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('login').classList.add('active');}
+    if (tab==='reg') {document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('reg').classList.add('active');}
+    if (tab==='rec') {document.querySelectorAll('.tab')[2].classList.add('active'); document.getElementById('rec').classList.add('active');}
+    clearAllMsg();
+}
+function clearAllMsg() {
+    document.getElementById('logMsg').textContent='';
+    document.getElementById('rMsg').textContent='';
+    document.getElementById('recMsg').textContent='';
+}
+
+// === REGISTER ===
+function doReg() {
+    const n = document.getElementById('rName').value.trim();
+    const e = document.getElementById('rMail').value.trim().toLowerCase();
+    const u = document.getElementById('rUser').value.trim().toLowerCase();
+    const p = document.getElementById('rPass').value;
+    const p2 = document.getElementById('rPass2').value;
+    const m = document.getElementById('rMsg');
+
+    if (!n||!e||!u||!p||!p2) {m.textContent='❌ Fill ALL fields!'; m.className='msg err'; return;}
+    if (!e.includes('@gmail.com')) {m.textContent='❌ Use Gmail only!'; m.className='msg err'; return;}
+    if (p.length<6) {m.textContent='❌ Password min 6 chars!'; m.className='msg err'; return;}
+    if (p!==p2) {m.textContent='❌ Passwords do not match!'; m.className='msg err'; return;}
+
+    let users = JSON.parse(localStorage.getItem('solarUsers')||'[]');
+    if (users.find(x=>x.email===e)) {m.textContent='❌ Gmail already registered!'; m.className='msg err'; return;}
+    if (users.find(x=>x.username===u)) {m.textContent='❌ Username taken!'; m.className='msg err'; return;}
+
+    users.push({name:n, email:e, user:u, pass:p});
+    localStorage.setItem('solarUsers', JSON.stringify(users));
+    m.textContent='✅ Account Created! Login now!'; m.className='msg ok';
+    setTimeout(()=>tabTo('login'),2000);
+}
+
+// === LOGIN ===
+function doLogin() {
+    const inp = document.getElementById('logUser').value.trim().toLowerCase();
+    const p = document.getElementById('logPass').value;
+    const m = document.getElementById('logMsg');
+    const users = JSON.parse(localStorage.getItem('solarUsers')||'[]');
+    const found = users.find(x=>(x.email===inp||x.user===inp) && x.pass===p);
+
+    if (found) {
+        localStorage.setItem('solarSession', JSON.stringify({name:found.name, email:found.email, user:found.user}));
+        showPage(found.name);
+    } else {
+        m.textContent='❌ Wrong email/username or password!'; m.className='msg err';
+    }
+}
+
+// === SHOW SOLAR PAGE ===
+function showPage(name) {
+    document.getElementById('authBox').classList.add('hidden');
+    document.getElementById('solarPage').style.display='block';
+    document.getElementById('uName').textContent=name;
+}
+
+// === LOGOUT ===
+function bye() {
+    localStorage.removeItem('solarSession');
+    location.reload();
+}
+
+// === GMAIL RECOVERY ===
+function sendRec() {
+    const e = document.getElementById('rMailIn').value.trim().toLowerCase();
+    const m = document.getElementById('recMsg');
+    const users = JSON.parse(localStorage.getItem('solarUsers')||'[]');
+    const found = users.find(x=>x.email===e);
+
+    if (!e) {m.textContent='❌ Enter your Gmail!'; m.className='msg err'; return;}
+    if (!e.includes('@gmail.com')) {m.textContent='❌ Enter valid Gmail!'; m.className='msg err'; return;}
+    if (!found) {m.textContent='❌ Gmail not registered!'; m.className='msg err'; return;}
+
+    const subj = encodeURIComponent('Solar App — Your Account Details');
+    const body = encodeURIComponent(
+`Hello ${found.name},
+
+Here are your Solar App details:
+• Username: ${found.user}
+• Email: ${found.email}
+• Password: ${found.pass}
+
+Use these to login. If you want to change password, login then update it.
+
+— Solar Setup App`
+    );
+    window.open(`https://mail.google.com/mail/?view=cm&to=${e}&su=${subj}&body=${body}`, '_blank');
+    m.innerHTML='✅ Gmail opened! Send the email to yourself to see your login details!';
+    m.className='msg ok';
+}
+
+// === AUTO LOGIN ===
+window.onload = function() {
+    const s = JSON.parse(localStorage.getItem('solarSession')||'null');
+    if (s) showPage(s.name);
+};
+</script>
+
+</body>
+</html>
