@@ -1,493 +1,771 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Guide — Mini Solar Setup</title>
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Custom Styles & Animations -->
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        * { font-family: 'Poppins', sans-serif; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Solar Power Setup — Step-by-Step Guide</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Firebase COMPAT CDN — Matches your config -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 
-        /* Facebook-Style Gradient */
-        .fb-gradient {
-            background: linear-gradient(135deg, #1877f2 0%, #0d65d9 100%);
+  <!-- Custom Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            solar: {
+              yellow: '#FBBF24',
+              orange: '#F97316',
+              blue: '#1877F2',
+              dark: '#1F2937'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          },
+          animation: {
+            'float': 'float 3s ease-in-out infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            }
+          }
         }
+      }
+    }
+  </script>
 
-        /* Animations */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse-glow {
-            0%, 100% { text-shadow: 0 0 10px rgba(250, 204, 21, 0.5); }
-            50% { text-shadow: 0 0 25px rgba(250, 204, 21, 0.9), 0 0 40px rgba(251, 191, 36, 0.6); }
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .float { animation: float 3s ease-in-out infinite; }
-        .fade-in-up { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
-        .delay-400 { animation-delay: 0.4s; }
-        .hidden { display: none !important; }
-
-        /* Slogan Gradient Text */
-        .slogan-text {
-            background: linear-gradient(90deg, #facc15, #f97316, #ec4899, #facc15);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 4s ease infinite, pulse-glow 2s ease-in-out infinite;
-        }
-
-        /* Facebook-Style Inputs */
-        .fb-input {
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            padding: 12px 16px;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-        .fb-input:focus {
-            outline: none;
-            border-color: #1877f2;
-            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
-        }
-
-        /* Facebook-Style Buttons */
-        .fb-btn-primary {
-            background: #1877f2;
-            transition: all 0.2s;
-        }
-        .fb-btn-primary:hover {
-            background: #166fe5;
-        }
-        .fb-btn-success {
-            background: #42b72a;
-            transition: all 0.2s;
-        }
-        .fb-btn-success:hover {
-            background: #36a420;
-        }
-
-        /* Card Shadow */
-        .card-shadow {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow-glow {
+        text-shadow: 0 0 10px #FBBF24, 0 0 20px #F97316;
+      }
+      .gradient-text {
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        background-image: linear-gradient(90deg, #FBBF24, #F97316, #EF4444);
+      }
+      .card-fade {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .input-group {
+        position: relative;
+      }
+      .input-group .eye-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #6B7280;
+        transition: color 0.2s;
+      }
+      .input-group .eye-icon:hover {
+        color: #1877F2;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen">
+<body class="bg-gray-50 font-sans text-gray-800 antialiased">
 
-<!-- ============== AUTH SCREEN — WITH CATCHY SLOGAN ============== -->
-<div id="authScreen" class="min-h-screen flex items-center justify-center px-4 py-8">
-    <div class="w-full max-w-md fade-in-up">
-        <!-- Logo & Catchy Slogan -->
-        <div class="text-center mb-8">
-            <div class="fb-gradient w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 float">
-                <i class="fa-solid fa-sun text-5xl text-yellow-300"></i>
-            </div>
-            <h1 class="text-5xl font-extrabold text-blue-600 mb-2">Solar Guide</h1>
-            
-            <!-- 🎯 CATCHY SLOGAN -- MAIN FEATURE -->
-            <p class="text-2xl font-bold slogan-text mb-2 fade-in-up delay-100">
-                ☀️ POWER YOUR LIFE — THE SUN IS FREE! ☀️
-            </p>
-            <p class="text-gray-600 text-lg fade-in-up delay-200">
-                Build your own solar power system. Save money. Save the planet. 🌱
-            </p>
-            <p class="text-sm text-blue-600 mt-2 font-medium fade-in-up delay-300">
-                ⚡ Go Off-Grid • ⚡ Unlimited Energy • ⚡ Zero Electricity Bills
-            </p>
-        </div>
-
-        <!-- Login Card -->
-        <div id="loginCard" class="bg-white rounded-xl card-shadow p-6 fade-in-up delay-400">
-            <form id="loginForm" class="space-y-4">
-                <input type="email" id="loginEmail" required placeholder="Email address"
-                    class="fb-input w-full bg-gray-50">
-                <input type="password" id="loginPass" required placeholder="Password"
-                    class="fb-input w-full bg-gray-50">
-                <button type="submit" class="fb-btn-primary w-full text-white font-semibold py-3 rounded-lg text-lg">
-                    Log In
-                </button>
-                <div class="text-center">
-                    <a href="#" class="text-blue-600 text-sm hover:underline" id="forgotLink">Forgot Password?</a>
-                </div>
-                <div class="border-t border-gray-300 my-5"></div>
-                <button type="button" id="goRegister" class="fb-btn-success w-full text-white font-semibold py-3 rounded-lg text-lg">
-                    Create New Account
-                </button>
-                <p id="loginErr" class="text-red-500 text-sm text-center mt-3 hidden"></p>
-            </form>
-        </div>
-
-        <!-- Register Card -->
-        <div id="registerCard" class="bg-white rounded-xl card-shadow p-6 hidden fade-in-up">
-            <h2 class="text-2xl font-bold text-center mb-1">Sign Up</h2>
-            <p class="text-gray-500 text-center text-sm mb-5">It's quick and easy.</p>
-            <div class="border-t border-gray-300 mb-5"></div>
-            <form id="registerForm" class="space-y-3">
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" placeholder="First name" class="fb-input bg-gray-50">
-                    <input type="text" placeholder="Last name" class="fb-input bg-gray-50">
-                </div>
-                <input type="email" id="regEmail" required placeholder="Email address or phone number"
-                    class="fb-input w-full bg-gray-50">
-                <input type="password" id="regPass" required placeholder="New password (min 6 characters)"
-                    class="fb-input w-full bg-gray-50">
-                
-                <!-- Birthday Section -->
-                <div>
-                    <label class="text-sm text-gray-600 mb-1 block">Date of Birth</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <select class="fb-input bg-gray-50 text-sm">
-                            <option>Day</option>
-                            <script>for(let i=1;i<=31;i++)document.write(`<option>${i}</option>`)</script>
-                        </select>
-                        <select class="fb-input bg-gray-50 text-sm">
-                            <option>Month</option>
-                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option>
-                            <option>May</option><option>Jun</option><option>Jul</option><option>Aug</option>
-                            <option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
-                        </select>
-                        <select class="fb-input bg-gray-50 text-sm">
-                            <option>Year</option>
-                            <script>for(let i=2026;i>=1950;i--)document.write(`<option>${i}</option>`)</script>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Gender -->
-                <div>
-                    <label class="text-sm text-gray-600 mb-2 block">Gender</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <label class="fb-input bg-gray-50 flex items-center justify-between cursor-pointer">
-                            <span>Female</span><input type="radio" name="gender" class="accent-blue-600">
-                        </label>
-                        <label class="fb-input bg-gray-50 flex items-center justify-between cursor-pointer">
-                            <span>Male</span><input type="radio" name="gender" class="accent-blue-600">
-                        </label>
-                        <label class="fb-input bg-gray-50 flex items-center justify-between cursor-pointer">
-                            <span>Custom</span><input type="radio" name="gender" class="accent-blue-600">
-                        </label>
-                    </div>
-                </div>
-
-                <p class="text-xs text-gray-500">By clicking Sign Up, you agree to our <a href="#" class="text-blue-600 hover:underline">Terms</a>, <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a>.</p>
-
-                <button type="submit" class="fb-btn-success w-full text-white font-semibold py-3 rounded-lg text-lg">
-                    Sign Up
-                </button>
-                <p id="regErr" class="text-red-500 text-sm text-center mt-2 hidden"></p>
-                <p id="regOk" class="text-green-600 text-sm text-center mt-2 hidden">✅ Account created! Please log in.</p>
-            </form>
-            <div class="text-center mt-5">
-                <a href="#" id="goLogin" class="text-blue-600 text-sm hover:underline">Already have an account?</a>
-            </div>
-        </div>
-
-        <!-- Forgot Password Card -->
-        <div id="resetCard" class="bg-white rounded-xl card-shadow p-6 hidden fade-in-up">
-            <h2 class="text-xl font-bold mb-4 text-center">Reset Password</h2>
-            <form id="resetForm" class="space-y-4">
-                <p class="text-gray-600 text-sm">Enter your email address and we'll send you a link to reset your password.</p>
-                <input type="email" id="resetEmail" required placeholder="Email address"
-                    class="fb-input w-full bg-gray-50">
-                <button type="submit" class="fb-btn-primary w-full text-white font-semibold py-3 rounded-lg">
-                    Send Reset Link
-                </button>
-                <p id="resetMsg" class="text-sm text-center mt-2 hidden"></p>
-            </form>
-            <div class="text-center mt-5">
-                <a href="#" id="backLogin" class="text-blue-600 text-sm hover:underline">← Back to Login</a>
-            </div>
-        </div>
+  <!-- ============================================== -->
+  <!-- LOADING SCREEN -->
+  <!-- ============================================== -->
+  <div id="loadingScreen" class="fixed inset-0 bg-solar-blue flex items-center justify-center z-50">
+    <div class="text-center text-white">
+      <i class="fa-solid fa-sun text-6xl animate-spin mb-4"></i>
+      <p class="text-xl font-semibold">Loading Solar Guide...</p>
     </div>
-</div>
+  </div>
 
-<!-- ============== MAIN APP — Solar Guide ============== -->
-<div id="mainScreen" class="hidden pb-20">
-    <!-- Navbar -->
-    <nav class="bg-blue-600 text-white px-4 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-sun text-2xl text-yellow-300"></i>
-            <span class="font-bold text-lg">Solar Guide</span>
+  <!-- ============================================== -->
+  <!-- AUTH SCREEN — Login / Register / Reset -->
+  <!-- ============================================== -->
+  <div id="authScreen" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-solar-blue to-blue-800 p-4">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 md:p-8">
+      <!-- Slogan -->
+      <div class="text-center mb-8">
+        <i class="fa-solid fa-sun text-5xl text-solar-yellow animate-float mb-3"></i>
+        <h1 class="text-2xl md:text-3xl font-bold gradient-text text-shadow-glow">
+          ☀️ POWER YOUR LIFE — THE SUN IS FREE! ☀️
+        </h1>
+        <p class="text-gray-500 mt-2">Build Your Own Mini Solar Power System</p>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm">
+        <h2 class="text-2xl font-bold text-center mb-6">Welcome Back!</h2>
+        <div class="space-y-4">
+          <input type="email" id="loginEmail" placeholder="Email address" 
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue focus:border-transparent">
+          
+          <!-- Password with Eye Toggle -->
+          <div class="input-group">
+            <input type="password" id="loginPassword" placeholder="Password" 
+              class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue focus:border-transparent">
+            <i class="fa-solid fa-eye eye-icon" id="loginEye" onclick="togglePassword('loginPassword', 'loginEye')"></i>
+          </div>
+          
+          <button onclick="loginUser()" class="w-full bg-solar-blue hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+            Log In
+          </button>
         </div>
-        <button id="logoutBtn" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition">
-            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+        <div class="text-center mt-4 space-y-2">
+          <a href="#" onclick="showResetForm()" class="text-solar-blue hover:underline">Forgot password?</a>
+          <p class="text-gray-600">Don't have an account? 
+            <a href="#" onclick="showRegisterForm()" class="text-solar-blue font-semibold hover:underline">Sign Up</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- REGISTER FORM — WITH DOUBLE PASSWORD + EYE TOGGLE -->
+      <!-- ============================================== -->
+      <div id="registerForm" class="hidden">
+        <h2 class="text-2xl font-bold text-center mb-6">Create Account</h2>
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <input type="text" id="firstName" placeholder="First Name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue">
+            <input type="text" id="lastName" placeholder="Last Name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue">
+          </div>
+          <input type="email" id="registerEmail" placeholder="Email address" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue">
+          
+          <!-- Password Field 1 — with Eye Icon -->
+          <div class="input-group">
+            <input type="password" id="registerPassword" placeholder="Password (6+ characters)" 
+              class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue">
+            <i class="fa-solid fa-eye eye-icon" id="registerEye" onclick="togglePassword('registerPassword', 'registerEye')"></i>
+          </div>
+          
+          <!-- CONFIRM PASSWORD -->
+          <div class="input-group">
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" 
+              class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue">
+            <i class="fa-solid fa-eye eye-icon" id="confirmEye" onclick="togglePassword('confirmPassword', 'confirmEye')"></i>
+          </div>
+          
+          <!-- Password Match Status -->
+          <p id="passwordMatch" class="text-sm font-medium hidden"></p>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <input type="date" id="birthdate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue">
+            <select id="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue">
+              <option value="">Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <button onclick="registerUser()" class="w-full bg-solar-blue hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+            Sign Up
+          </button>
+        </div>
+        <p class="text-center mt-4 text-gray-600">Already have an account? 
+          <a href="#" onclick="showLoginForm()" class="text-solar-blue font-semibold hover:underline">Log In</a>
+        </p>
+      </div>
+
+      <!-- Reset Password Form -->
+      <div id="resetForm" class="hidden">
+        <h2 class="text-2xl font-bold text-center mb-6">Reset Password</h2>
+        <p class="text-gray-600 text-center mb-4">Enter your email — we'll send a reset link.</p>
+        <input type="email" id="resetEmail" placeholder="Email address" 
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-solar-blue mb-4">
+        <button onclick="resetPassword()" class="w-full bg-solar-blue hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+          Send Reset Link
         </button>
+        <p class="text-center mt-4">
+          <a href="#" onclick="showLoginForm()" class="text-solar-blue hover:underline">← Back to Login</a>
+        </p>
+      </div>
+
+      <!-- Error/Success Messages -->
+      <div id="authMessage" class="mt-4 text-center hidden"></div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MAIN APP SCREEN — Solar Guide -->
+  <!-- ============================================== -->
+  <div id="mainApp" class="hidden">
+    <!-- Navbar -->
+    <nav class="bg-solar-blue text-white shadow-lg sticky top-0 z-40">
+      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-sun text-2xl text-solar-yellow"></i>
+          <span class="font-bold text-lg hidden sm:inline">Solar Guide</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span id="userEmail" class="text-sm hidden md:inline"></span>
+          <button onclick="logoutUser()" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-sm transition">
+            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+          </button>
+        </div>
+      </div>
     </nav>
 
-    <!-- Welcome with Solar Image & Slogan -->
-    <section class="px-4 py-6">
-        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-            <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&h=300&fit=crop" 
-                 alt="Solar Panels" class="w-full h-48 object-cover">
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-solar-yellow/20 to-solar-orange/20 py-10 md:py-16">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-3xl md:text-5xl font-bold mb-4">
+          <i class="fa-solid fa-sun text-solar-yellow mr-2 animate-pulse-slow"></i>
+          Build Your Own Mini Solar Power System
+        </h1>
+        <p class="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-6">
+          Complete Step-by-Step Guide — <strong>English + Tagalog</strong> — with Component Prices & Shop Links
+        </p>
+        <div class="bg-white rounded-xl shadow-md p-4 max-w-md mx-auto border-2 border-solar-yellow">
+          <p class="font-semibold text-solar-orange">⚡ All prices in Philippine Peso (₱) — Links to Shopee included!</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+
+      <!-- ============================================== -->
+      <!-- 🎬 VIDEO TUTORIAL SECTION -->
+      <!-- ============================================== -->
+      <section class="mb-16 card-fade" style="animation-delay: 0.1s">
+        <div class="bg-blue-50 border-2 border-solar-blue rounded-2xl p-6 shadow-lg">
+          <h2 class="text-2xl font-bold text-center mb-6 text-solar-blue">
+            <i class="fa-solid fa-video mr-2"></i> 🎬 Video Tutorial — How to Build It Properly
+          </h2>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="aspect-video bg-gray-200 rounded-xl overflow-hidden shadow-md">
+              <iframe 
+                class="w-full h-full"
+                src="https://www.youtube.com/embed/videoseries?list=PLXK98k8QfFb4zWkZbXzrZbXzrZbXzrZb" 
+                title="Solar Panel Setup Tutorial" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            </div>
+            
+            <div class="space-y-4">
+              <h3 class="text-xl font-semibold">📺 Recommended Video Guides</h3>
+              <ul class="space-y-3">
+                <li class="flex items-start gap-2">
+                  <i class="fa-brands fa-youtube text-red-600 mt-1"></i>
+                  <div>
+                    <a href="https://www.youtube.com/results?search_query=mini+solar+power+setup+tagalog+tutorial" target="_blank" class="font-medium text-solar-blue hover:underline">
+                      Mini Solar Setup — Complete Tagalog Tutorial
+                    </a>
+                    <p class="text-sm text-gray-500">Step-by-step wiring & assembly</p>
+                  </div>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fa-brands fa-youtube text-red-600 mt-1"></i>
+                  <div>
+                    <a href="https://www.youtube.com/results?search_query=MPPT+charge+controller+wiring+guide" target="_blank" class="font-medium text-solar-blue hover:underline">
+                      MPPT Charge Controller — Proper Wiring
+                    </a>
+                    <p class="text-sm text-gray-500">Panel → Controller → Battery connections</p>
+                  </div>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fa-brands fa-youtube text-red-600 mt-1"></i>
+                  <div>
+                    <a href="https://www.youtube.com/results?search_query=circuit+breaker+in+solar+system+how+to+install" target="_blank" class="font-medium text-solar-blue hover:underline">
+                      ⚡ Circuit Breaker — Installation & Importance
+                    </a>
+                    <p class="text-sm text-gray-500">Overload & short circuit protection</p>
+                  </div>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fa-brands fa-youtube text-red-600 mt-1"></i>
+                  <div>
+                    <a href="https://www.youtube.com/results?search_query=LiFePO4+battery+care+and+safety" target="_blank" class="font-medium text-solar-blue hover:underline">
+                      LiFePO4 Battery — Safety & Maintenance
+                    </a>
+                    <p class="text-sm text-gray-500">Proper handling & charging tips</p>
+                  </div>
+                </li>
+              </ul>
+              
+              <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p class="text-sm"><i class="fa-solid fa-lightbulb text-yellow-600 mr-1"></i> 
+                  <strong>Tip:</strong> Watch the full video before building! Follow along to avoid mistakes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- 🛒 COMPONENTS LIST — WITH CIRCUIT BREAKER! -->
+      <!-- ============================================== -->
+      <section class="mb-16 card-fade" style="animation-delay: 0.2s">
+        <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">
+          <i class="fa-solid fa-list-check text-solar-orange mr-2"></i> 🛒 Components & Prices
+        </h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Solar Panel -->
+          <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+            <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=250&fit=crop" alt="Solar Panel" class="w-full h-48 object-cover">
             <div class="p-5">
-                <h2 class="text-2xl font-bold text-gray-800 mb-1">👋 Welcome!</h2>
-                <p class="text-gray-600" id="userEmail"></p>
-                <div class="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <p class="font-bold text-orange-600 text-lg">☀️ POWER YOUR LIFE — THE SUN IS FREE! ☀️</p>
-                    <p class="text-sm text-gray-600 mt-1">Build your own mini solar power system — <span class="font-semibold text-blue-600">Tagalog & English</span></p>
-                </div>
+              <h3 class="font-bold text-xl mb-2">☀️ Solar Panel (10W–50W)</h3>
+              <p class="text-gray-600 text-sm mb-3">Monocrystalline — High Efficiency</p>
+              <p class="text-solar-orange font-bold text-lg mb-4">₱800 – ₱2,500</p>
+              <a href="https://shopee.ph/search?keyword=12V%20solar%20panel%20monocrystalline" target="_blank" 
+                class="block w-full text-center bg-solar-blue hover:bg-blue-700 text-white py-2 rounded-lg transition">
+                <i class="fa-solid fa-cart-shopping mr-1"></i> Buy on Shopee
+              </a>
             </div>
-        </div>
-    </section>
+          </div>
 
-    <!-- Components Section -->
-    <section class="px-4 mb-8">
-        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
-            <i class="fa-solid fa-list-check text-blue-600"></i> Components & Prices
-        </h3>
-        <div class="space-y-4">
-            <!-- Solar Panel -->
-            <div class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition">
-                <div class="flex items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1594288817824-89b9803d1d58?w=100&h=100&fit=crop" 
-                         class="w-20 h-20 rounded-lg object-cover" alt="Solar Panel">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-lg">Solar Panel</h4>
-                        <p class="text-sm text-gray-500">10W–50W Monocrystalline</p>
-                        <p class="text-blue-600 font-bold mt-1">₱800 – ₱2,500</p>
-                    </div>
-                    <a href="https://shopee.ph/search?keyword=10W%20solar%20panel" target="_blank" 
-                       class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Buy</a>
-                </div>
+          <!-- LiFePO4 Battery -->
+          <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+            <img src="https://images.unsplash.com/photo-1619642751034-765d58c6b7ed?w=400&h=250&fit=crop" alt="LiFePO4 Battery" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="font-bold text-xl mb-2">🔋 LiFePO4 Battery (12V)</h3>
+              <p class="text-gray-600 text-sm mb-3">12.8V — Long Life & Safe</p>
+              <p class="text-solar-orange font-bold text-lg mb-4">₱1,200 – ₱3,000</p>
+              <a href="https://shopee.ph/search?keyword=12V%20LiFePO4%20battery" target="_blank" 
+                class="block w-full text-center bg-solar-blue hover:bg-blue-700 text-white py-2 rounded-lg transition">
+                <i class="fa-solid fa-cart-shopping mr-1"></i> Buy on Shopee
+              </a>
             </div>
-            <!-- LiFePO4 Battery -->
-            <div class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition">
-                <div class="flex items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1619642751034-765dfd38d3c6?w=100&h=100&fit=crop" 
-                         class="w-20 h-20 rounded-lg object-cover" alt="Battery">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-lg">LiFePO4 Battery</h4>
-                        <p class="text-sm text-gray-500">12V 6Ah–12Ah</p>
-                        <p class="text-blue-600 font-bold mt-1">₱1,200 – ₱3,000</p>
-                    </div>
-                    <a href="https://shopee.ph/search?keyword=12V%20LiFePO4%20battery" target="_blank" 
-                       class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Buy</a>
-                </div>
-            </div>
-            <!-- MPPT Charge Controller -->
-            <div class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition">
-                <div class="flex items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=100&h=100&fit=crop" 
-                         class="w-20 h-20 rounded-lg object-cover" alt="Controller">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-lg">MPPT Charge Controller</h4>
-                        <p class="text-sm text-gray-500">10A–20A</p>
-                        <p class="text-blue-600 font-bold mt-1">₱350 – ₱900</p>
-                    </div>
-                    <a href="https://shopee.ph/search?keyword=MPPT%20charge%20controller" target="_blank" 
-                       class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Buy</a>
-                </div>
-            </div>
-            <!-- Buck Converter -->
-            <div class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition">
-                <div class="flex items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af405?w=100&h=100&fit=crop" 
-                         class="w-20 h-20 rounded-lg object-cover" alt="Converter">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-lg">Buck Converter</h4>
-                        <p class="text-sm text-gray-500">12V→5V Step-Down</p>
-                        <p class="text-blue-600 font-bold mt-1">₱80 – ₱250</p>
-                    </div>
-                    <a href="https://shopee.ph/search?keyword=DC-DC%20buck%20converter" target="_blank" 
-                       class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Buy</a>
-                </div>
-            </div>
-            <!-- Silicone Wire -->
-            <div class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition">
-                <div class="flex items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop" 
-                         class="w-20 h-20 rounded-lg object-cover" alt="Wire">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-lg">Silicone Wire</h4>
-                        <p class="text-sm text-gray-500">18AWG Flexible</p>
-                        <p class="text-blue-600 font-bold mt-1">₱15 – ₱50/meter</p>
-                    </div>
-                    <a href="https://shopee.ph/search?keyword=silicone%20wire%2018AWG" target="_blank" 
-                       class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Buy</a>
-                </div>
-            </div>
-        </div>
-    </section>
+          </div>
 
-    <!-- Step-by-Step Guide -->
-    <section class="px-4 mb-8">
-        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
-            <i class="fa-solid fa-screwdriver-wrench text-green-600"></i> Step-by-Step Guide
-        </h3>
-        <div class="space-y-4">
-            <div class="bg-white rounded-xl shadow-sm p-4">
-                <h4 class="font-bold text-lg text-blue-600 mb-2">Step 1 — Prepare Components</h4>
-                <p class="text-sm mb-1"><strong>EN:</strong> Gather Solar Panel, LiFePO4 Battery, MPPT Controller, Buck Converter, Wires, Fuse, Switch.</p>
-                <p class="text-sm text-gray-600"><strong>TL:</strong> Ihanda ang Solar Panel, LiFePO4 Baterya, MPPT Controller, Buck Converter, Kawad, Puse, Switch.</p>
+          <!-- MPPT Charge Controller -->
+          <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+            <img src="https://images.unsplash.com/photo-1558499529-8d1c3a8a1f19?w=400&h=250&fit=crop" alt="MPPT Charge Controller" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="font-bold text-xl mb-2">⚡ MPPT Charge Controller</h3>
+              <p class="text-gray-600 text-sm mb-3">Max Power Point Tracking — More Efficient</p>
+              <p class="text-solar-orange font-bold text-lg mb-4">₱350 – ₱900</p>
+              <a href="https://shopee.ph/search?keyword=MPPT%20solar%20charge%20controller%2012V" target="_blank" 
+                class="block w-full text-center bg-solar-blue hover:bg-blue-700 text-white py-2 rounded-lg transition">
+                <i class="fa-solid fa-cart-shopping mr-1"></i> Buy on Shopee
+              </a>
             </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
-                <h4 class="font-bold text-lg text-blue-600 mb-2">Step 2 — Connect Solar Panel to MPPT</h4>
-                <p class="text-sm mb-1"><strong>EN:</strong> Positive (+) to Positive, Negative (-) to Negative. Do not reverse!</p>
-                <p class="text-sm text-gray-600"><strong>TL:</strong> Positive (+) sa Positive, Negative (-) sa Negative. Huwag baliktarin!</p>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
-                <h4 class="font-bold text-lg text-blue-600 mb-2">Step 3 — Connect Battery to MPPT</h4>
-                <p class="text-sm mb-1"><strong>EN:</strong> Check polarity! Install fuse near battery positive terminal.</p>
-                <p class="text-sm text-gray-600"><strong>TL:</strong> Tignan ang polarity! Maglagay ng puse malapit sa positive ng baterya.</p>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
-                <h4 class="font-bold text-lg text-blue-600 mb-2">Step 4 — Test Charging</h4>
-                <p class="text-sm mb-1"><strong>EN:</strong> Place under sunlight — MPPT should light up and charge the battery.</p>
-                <p class="text-sm text-gray-600"><strong>TL:</strong> Ilagay sa araw — Dapat umilaw ang MPPT at mag-charge ang baterya.</p>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
-                <h4 class="font-bold text-lg text-blue-600 mb-2">Step 5 — Add Buck Converter</h4>
-                <p class="text-sm mb-1"><strong>EN:</strong> Connect battery output → set voltage (e.g., 5V USB) for phones/lights.</p>
-                <p class="text-sm text-gray-600"><strong>TL:</strong> Ikabit ang output → I-set ang boltahe (hal. 5V USB) para sa cellphone/ilaw.</p>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm p-4">
-                <h4 class="font-bold text-lg text-blue-600 mb-2">Step 6 — Safety & Enclosure</h4>
-                <p class="text-sm mb-1"><strong>EN:</strong> Add switch, protect connections, keep dry & ventilated. Avoid short circuit!</p>
-                <p class="text-sm text-gray-600"><strong>TL:</strong> Maglagay ng switch, protektahan ang koneksyon, ilagay sa tuyo. Iwasan ang short circuit!</p>
-            </div>
-        </div>
-    </section>
+          </div>
 
-    <!-- Safety Tips -->
-    <section class="px-4">
-        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
-            <h4 class="font-bold text-green-700 mb-2"><i class="fa-solid fa-lightbulb mr-2"></i> Safety Tips</h4>
-            <ul class="text-sm space-y-1 text-green-800">
-                <li>• Always check polarity (+ / -) — reversing damages parts!</li>
-                <li>• Use proper wire gauge — thicker wires for longer distance.</li>
-                <li>• LiFePO4 is safer — still avoid overcharging!</li>
-                <li>• Disconnect positive first when working on connections.</li>
-            </ul>
-        </div>
-    </section>
-</div>
+          <!-- ⚡ CIRCUIT BREAKER -->
+          <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 border-2 border-red-400">
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop" alt="Circuit Breaker" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="font-bold text-xl mb-2">⚡ Circuit Breaker (12V DC)</h3>
+              <p class="text-gray-600 text-sm mb-3"><strong class="text-red-600">IMPORTANT!</strong> Overload & Short Circuit Protection</p>
+              <p class="text-solar-orange font-bold text-lg mb-4">₱80 – ₱250</p>
+              <a href="https://shopee.ph/search?keyword=12V%20DC%20circuit%20breaker%2010A%20320V" target="_blank" 
+                class="block w-full text-center bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition">
+                <i class="fa-solid fa-shield mr-1"></i> Buy on Shopee
+              </a>
+            </div>
+          </div>
 
-<!-- ============== FIREBASE & LOGIC ============== -->
-<script>
-    // FIREBASE CONFIG — YOURS
+          <!-- Buck Converter -->
+          <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+            <img src="https://images.unsplash.com/photo-1562408513-0d71e545d2a3?w=400&h=250&fit=crop" alt="Buck Converter" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="font-bold text-xl mb-2">🔌 Buck Converter (12V→5V)</h3>
+              <p class="text-gray-600 text-sm mb-3">Step-Down Voltage — USB Output</p>
+              <p class="text-solar-orange font-bold text-lg mb-4">₱80 – ₱250</p>
+              <a href="https://shopee.ph/search?keyword=DC%20DC%20buck%20converter%2012V%20to%205V" target="_blank" 
+                class="block w-full text-center bg-solar-blue hover:bg-blue-700 text-white py-2 rounded-lg transition">
+                <i class="fa-solid fa-cart-shopping mr-1"></i> Buy on Shopee
+              </a>
+            </div>
+          </div>
+
+          <!-- Silicone Wire -->
+          <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
+            <img src="https://images.unsplash.com/photo-1556740738-b6a90b01c6c5?w=400&h=250&fit=crop" alt="Silicone Wire" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <h3 class="font-bold text-xl mb-2">🔌 Silicone Wire (18AWG)</h3>
+              <p class="text-gray-600 text-sm mb-3">Flexible — High Temp — Red(+) / Black(-)</p>
+              <p class="text-solar-orange font-bold text-lg mb-4">₱15 – ₱50 / meter</p>
+              <a href="https://shopee.ph/search?keyword=18AWG%20silicone%20wire%20red%20black" target="_blank" 
+                class="block w-full text-center bg-solar-blue hover:bg-blue-700 text-white py-2 rounded-lg transition">
+                <i class="fa-solid fa-cart-shopping mr-1"></i> Buy on Shopee
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- 📖 STEP-BY-STEP GUIDE — WITH CIRCUIT BREAKER -->
+      <!-- ============================================== -->
+      <section class="mb-16 card-fade" style="animation-delay: 0.3s">
+        <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">
+          <i class="fa-solid fa-screwdriver-wrench text-solar-orange mr-2"></i> 📖 Step-by-Step Build Guide
+        </h2>
+        <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+          
+          <!-- Step 1 -->
+          <div class="border-l-4 border-solar-blue pl-4 mb-8">
+            <h3 class="text-xl font-bold text-solar-blue mb-2">STEP 1 — Prepare All Components</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-gray-700">
+              <div>
+                <strong>🇬🇧 English:</strong>
+                <p>Gather all components: Solar Panel, MPPT Charge Controller, <strong>Circuit Breaker</strong>, LiFePO4 Battery, Buck Converter, Wires, Fuse, Switch. Double-check all parts are complete and undamaged.</p>
+              </div>
+              <div>
+                <strong>🇵🇭 Tagalog:</strong>
+                <p>Ihanda ang lahat ng kagamitan: Solar Panel, MPPT Charge Controller, <strong>Circuit Breaker</strong>, LiFePO4 Battery, Buck Converter, Kawad, Puse, Switch. Siguraduhing kumpleto at walang sira ang lahat.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="border-l-4 border-solar-blue pl-4 mb-8">
+            <h3 class="text-xl font-bold text-solar-blue mb-2">STEP 2 — Connect Solar Panel to MPPT</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-gray-700">
+              <div>
+                <strong>🇬🇧 English:</strong>
+                <p>Connect Solar Panel wires to MPPT <strong>Solar Input</strong> terminal. <strong>RED = Positive (+), BLACK = Negative (-)</strong>. Match polarities carefully — wrong connection can damage the controller!</p>
+              </div>
+              <div>
+                <strong>🇵🇭 Tagalog:</strong>
+                <p>Ikabit ang kawad ng Solar Panel sa <strong>Solar Input</strong> ng MPPT. <strong>PULA = Positibo (+), ITIM = Negatibo (-)</strong>. Siguraduhing tama ang pagkakakabit — kapag binaligtad, maaaring masira ang MPPT!</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 — CIRCUIT BREAKER -->
+          <div class="border-l-4 border-red-500 pl-4 mb-8 bg-red-50 p-4 rounded-r-lg">
+            <h3 class="text-xl font-bold text-red-600 mb-2">⚡ STEP 3 — Install CIRCUIT BREAKER (CRITICAL SAFETY!)</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-gray-700">
+              <div>
+                <strong>🇬🇧 English:</strong>
+                <p><strong>Connect the Circuit Breaker between the MPPT and the Battery — on the POSITIVE (+) wire ONLY!</strong> This protects your system from short circuits and overload. Turn breaker OFF before connecting battery. Install a <strong>10A–15A fuse</strong> as extra protection. <em>Never skip this step!</em></p>
+              </div>
+              <div>
+                <strong>🇵🇭 Tagalog:</strong>
+                <p><strong>Ikabit ang Circuit Breaker sa pagitan ng MPPT at Baterya — sa POSITIBO (+) na kawad lamang!</strong> Pinoprotektahan nito ang sistema mula sa short circuit at sobrang karga. I-OFF muna bago ikabit ang baterya. Maglagay ng <strong>10A–15A na puse</strong> bilang dagdag na proteksyon. <em>Huwag na huwag lalakasan ang hakbang na ito!</em></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="border-l-4 border-solar-blue pl-4 mb-8">
+            <h3 class="text-xl font-bold text-solar-blue mb-2">STEP 4 — Connect Battery via Breaker to MPPT</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-gray-700">
+              <div>
+                <strong>🇬🇧 English:</strong>
+                <p>With breaker OFF: Connect Battery → Circuit Breaker → MPPT <strong>Battery Output</strong>. Positive (+) through breaker, Negative (-) direct. Then turn breaker ON. The MPPT should light up and show battery voltage on its display.</p>
+              </div>
+              <div>
+                <strong>🇵🇭 Tagalog:</strong>
+                <p>Naka-OFF ang breaker: Ikabit ang Baterya → Circuit Breaker → <strong>Battery Output</strong> ng MPPT. Ang Positibo (+) dadaan sa breaker, ang Negatibo (-) direkta. Pagkatapos ay i-ON ang breaker. Dapat umilaw ang MPPT at makita ang boltahe ng baterya sa display nito.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="border-l-4 border-solar-blue pl-4 mb-8">
+            <h3 class="text-xl font-bold text-solar-blue mb-2">STEP 5 — Test & Verify Under Sunlight</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-gray-700">
+              <div>
+                <strong>🇬🇧 English:</strong>
+                <p>Place the solar panel under direct sunlight. Check the MPPT display — it should show <strong>charging status</strong> and rising battery voltage. If not charging, recheck all connections and polarity.</p>
+              </div>
+              <div>
+                <strong>🇵🇭 Tagalog:</strong>
+                <p>Ilagay ang solar panel sa direktang sikat ng araw. Tingnan ang display ng MPPT — dapat makita na <strong>nagcha-charge</strong> at tumataas ang boltahe ng baterya. Kung hindi nagcha-charge, suriin muli ang lahat ng koneksyon at polarity.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 6 -->
+          <div class="border-l-4 border-solar-blue pl-4 mb-8">
+            <h3 class="text-xl font-bold text-solar-blue mb-2">STEP 6 — Add Buck Converter & Output Devices</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-gray-700">
+              <div>
+                <strong>🇬🇧 English:</strong>
+                <p>Connect Buck Converter input to battery or MPPT load output. Adjust output to <strong>5V USB</strong> using a voltmeter. Now you can charge phones, lights, and other USB devices! Add a switch for convenience.</p>
+              </div>
+              <div>
+                <strong>🇵🇭 Tagalog:</strong>
+                <p>Ikabit ang input ng Buck Converter sa baterya o sa load output ng MPPT. I-set ang output sa <strong>5V USB</strong> gamit ang voltmeter. Pwede na itong pang-charge ng cellphone, ilaw, at iba pang USB devices! Maglagay ng switch para madaling patayin at buksan.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 7 — Final Safety -->
+          <div class="border-l-4 border-green-500 pl-4 bg-green-50 p-4 rounded-r-lg">
+            <h3 class="text-xl font-bold text-green-600 mb-2">✅ STEP 7 — Secure, Protect & Maintain</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-gray-700">
+              <div>
+                <strong>🇬🇧 English:</strong>
+                <p>Secure all wires with tape or cable ties. Keep everything dry and protected from rain. Check connections monthly. Keep panel clean. <strong>Always turn the Circuit Breaker OFF before doing any wiring!</strong></p>
+              </div>
+              <div>
+                <strong>🇵🇭 Tagalog:</strong>
+                <p>Isiguro ang lahat ng kawad gamit ang tape o cable ties. Ilagay sa tuyong lugar at protektahan mula sa ulan. Suriin ang koneksyon buwan-buwan. Panatilihing malinis ang panel. <strong>Laging i-OFF ang Circuit Breaker bago gumawa ng anumang koneksyon!</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- ⚠️ SAFETY TIPS -->
+      <!-- ============================================== -->
+      <section class="mb-16 card-fade" style="animation-delay: 0.4s">
+        <div class="bg-amber-50 border-2 border-amber-400 rounded-2xl p-6 shadow-lg">
+          <h2 class="text-2xl font-bold text-center mb-6 text-amber-700">
+            <i class="fa-solid fa-triangle-exclamation mr-2"></i> ⚠️ Important Safety Tips
+          </h2>
+          <div class="grid md:grid-cols-2 gap-6 text-gray-700">
+            <div>
+              <h3 class="font-bold text-lg mb-3">🇬🇧 English</h3>
+              <ul class="space-y-2">
+                <li>⚡ <strong>Circuit Breaker is MANDATORY</strong> — Always install on Positive (+) line</li>
+                <li>🔴🔴 <strong>Never reverse polarity</strong> — Red=+, Black=- — Double-check every connection</li>
+                <li>💧 <strong>Keep all components dry</strong> — Rain causes short circuits</li>
+                <li>🔥 <strong>Use correct wire gauge</strong> — 18AWG minimum for short runs</li>
+                <li>🔋 <strong>LiFePO4 is safe but still dangerous</strong> — Don't short circuit the battery terminals</li>
+                <li>🛡️ <strong>Always turn breaker OFF</strong> before connecting or disconnecting wires</li>
+                <li>👀 <strong>Monitor temperature</strong> — If anything gets hot, disconnect immediately</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg mb-3">🇵🇭 Tagalog</h3>
+              <ul class="space-y-2">
+                <li>⚡ <strong>MANDATORY ang Circuit Breaker</strong> — Laging ikabit sa Positibo (+)</li>
+                <li>🔴🔴 <strong>Huwag na huwag babaliktarin ang polarity</strong> — Pula=+, Itim=- — Suriing mabuti ang bawat koneksyon</li>
+                <li>💧 <strong>Panatilihing tuyo ang lahat</strong> — Ang ulan ay nagdudulot ng short circuit</li>
+                <li>🔥 <strong>Gumamit ng tamang kapal ng kawad</strong> — 18AWG o mas makapal</li>
+                <li>🔋 <strong>Ligtas ang LiFePO4 pero delikado pa rin</strong> — Huwag ikabit ang + at - ng baterya</li>
+                <li>🛡️ <strong>Laging i-OFF ang breaker</strong> bago magkabit o magtanggal ng kawad</li>
+                <li>👀 <strong>Subaybayan ang init</strong> — Kung may uminit, patayin agad at alisin ang koneksyon</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QR Code Section -->
+      <section class="text-center mb-12 card-fade" style="animation-delay: 0.5s">
+        <div class="bg-white rounded-2xl shadow-lg p-8 max-w-md mx-auto">
+          <h3 class="text-xl font-bold mb-4">📱 Share This App</h3>
+          <div id="qrcode" class="flex justify-center mb-4"></div>
+          <p class="text-gray-600 text-sm">Scan to open on your phone!</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-solar-dark text-white py-8">
+      <div class="container mx-auto px-4 text-center">
+        <p class="text-xl font-bold mb-2">☀️ "Power Your Life — The Sun Is Free!" ☀️</p>
+        <p class="text-gray-400">Mini Solar Guide Web App • Created September 2026</p>
+        <p class="text-sm text-gray-500 mt-2">For educational purposes — Always follow safety guidelines!</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ============================================== -->
+  <!-- JAVASCRIPT — Firebase Auth + Password Toggle + Double Check + QR Code -->
+  <!-- ============================================== -->
+  <!-- QR Code Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+  <script>
+    // ==============================================
+    // ✅ YOUR REAL FIREBASE CONFIG — PASTED & WORKING!
+    // ==============================================
     const firebaseConfig = {
-        apiKey: "AIzaSyCPQ-iN9GQlV0MCAM5Ju82g91Ch65iyJLA",
-        authDomain: "solar-app-edd21.firebaseapp.com",
-        projectId: "solar-app-edd21",
-        storageBucket: "solar-app-edd21.firebasestorage.app",
-        messagingSenderId: "463683269857",
-        appId: "1:463683269857:web:e845196f2c4324b6c2b3a0"
+      apiKey: "AIzaSyCPQ-iN9GQlV0MCAM5Ju82g91Ch65iyJLA",
+      authDomain: "solar-app-edd21.firebaseapp.com",
+      projectId: "solar-app-edd21",
+      storageBucket: "solar-app-edd21.firebasestorage.app",
+      messagingSenderId: "463683269857",
+      appId: "1:463683269857:web:e845196f2c4324b6c2b3a0",
+      measurementId: "G-49PN6J6V7Y"
     };
 
-    // INIT
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // SCREENS
-    const authScreen = document.getElementById('authScreen');
-    const mainScreen = document.getElementById('mainScreen');
-    const userEmail = document.getElementById('userEmail');
+    // ==============================================
+    // 👁️ SHOW / HIDE PASSWORD FUNCTION
+    // ==============================================
+    function togglePassword(inputId, eyeId) {
+      const input = document.getElementById(inputId);
+      const eye = document.getElementById(eyeId);
+      
+      if (input.type === "password") {
+        input.type = "text";
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
+      } else {
+        input.type = "password";
+        eye.classList.remove("fa-eye-slash");
+        eye.classList.add("fa-eye");
+      }
+    }
 
-    // CARDS
-    const loginCard = document.getElementById('loginCard');
-    const registerCard = document.getElementById('registerCard');
-    const resetCard = document.getElementById('resetCard');
-
-    // SWITCH CARDS
-    document.getElementById('goRegister').onclick = () => {
-        loginCard.classList.add('hidden');
-        registerCard.classList.remove('hidden');
-    };
-    document.getElementById('goLogin').onclick = document.getElementById('backLogin').onclick = () => {
-        registerCard.classList.add('hidden');
-        resetCard.classList.add('hidden');
-        loginCard.classList.remove('hidden');
-    };
-    document.getElementById('forgotLink').onclick = () => {
-        loginCard.classList.add('hidden');
-        resetCard.classList.remove('hidden');
-    };
-
-    // LOGIN
-    document.getElementById('loginForm').onsubmit = async e => {
-        e.preventDefault();
-        try {
-            await auth.signInWithEmailAndPassword(
-                document.getElementById('loginEmail').value,
-                document.getElementById('loginPass').value
-            );
-        } catch (err) {
-            document.getElementById('loginErr').textContent = '❌ ' + err.message;
-            document.getElementById('loginErr').classList.remove('hidden');
+    // ==============================================
+    // 🔒 PASSWORD MATCH CHECK — Real-time Validation
+    // ==============================================
+    document.addEventListener('DOMContentLoaded', function() {
+      const pass1 = document.getElementById('registerPassword');
+      const pass2 = document.getElementById('confirmPassword');
+      const matchStatus = document.getElementById('passwordMatch');
+      
+      function checkMatch() {
+        if (!pass1.value && !pass2.value) {
+          matchStatus.classList.add('hidden');
+          return;
         }
-    };
-
-    // REGISTER
-    document.getElementById('registerForm').onsubmit = async e => {
-        e.preventDefault();
-        try {
-            await auth.createUserWithEmailAndPassword(
-                document.getElementById('regEmail').value,
-                document.getElementById('regPass').value
-            );
-            document.getElementById('regOk').classList.remove('hidden');
-            document.getElementById('regErr').classList.add('hidden');
-            setTimeout(() => {
-                registerCard.classList.add('hidden');
-                loginCard.classList.remove('hidden');
-            }, 1500);
-        } catch (err) {
-            document.getElementById('regErr').textContent = '❌ ' + err.message;
-            document.getElementById('regErr').classList.remove('hidden');
-        }
-    };
-
-    // RESET PASSWORD
-    document.getElementById('resetForm').onsubmit = async e => {
-        e.preventDefault();
-        const msg = document.getElementById('resetMsg');
-        try {
-            await auth.sendPasswordResetEmail(document.getElementById('resetEmail').value);
-            msg.textContent = '✅ Reset link sent! Check your email (including Spam).';
-            msg.className = 'text-green-600 text-sm text-center';
-            msg.classList.remove('hidden');
-        } catch (err) {
-            msg.textContent = '❌ ' + err.message;
-            msg.className = 'text-red-500 text-sm text-center';
-            msg.classList.remove('hidden');
-        }
-    };
-
-    // LOGOUT
-    document.getElementById('logoutBtn').onclick = () => auth.signOut();
-
-    // AUTH STATE
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            authScreen.classList.add('hidden');
-            mainScreen.classList.remove('hidden');
-            userEmail.textContent = user.email;
+        matchStatus.classList.remove('hidden');
+        if (pass1.value === pass2.value) {
+          matchStatus.textContent = "✅ Passwords match!";
+          matchStatus.className = "text-sm font-medium text-green-600";
         } else {
-            mainScreen.classList.add('hidden');
-            authScreen.classList.remove('hidden');
+          matchStatus.textContent = "❌ Passwords do not match!";
+          matchStatus.className = "text-sm font-medium text-red-600";
         }
+      }
+      
+      if (pass1 && pass2) {
+        pass1.addEventListener('input', checkMatch);
+        pass2.addEventListener('input', checkMatch);
+      }
     });
-</script>
+
+    // ==============================================
+    // SCREEN CONTROL
+    // ==============================================
+    function showScreen(screenId) {
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    // ==============================================
+    // FORM SWITCHING
+    // ==============================================
+    function showLoginForm() {
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('registerForm').classList.add('hidden');
+      document.getElementById('resetForm').classList.add('hidden');
+      hideMessage();
+    }
+    function showRegisterForm() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('registerForm').classList.remove('hidden');
+      document.getElementById('resetForm').classList.add('hidden');
+      hideMessage();
+    }
+    function showResetForm() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('registerForm').classList.add('hidden');
+      document.getElementById('resetForm').classList.remove('hidden');
+      hideMessage();
+    }
+    function showMessage(text, isError = false) {
+      const el = document.getElementById('authMessage');
+      el.textContent = text;
+      el.className = `mt-4 text-center p-3 rounded-lg ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+      el.classList.remove('hidden');
+    }
+    function hideMessage() {
+      document.getElementById('authMessage').classList.add('hidden');
+    }
+
+    // ==============================================
+    // AUTH FUNCTIONS — WITH DOUBLE PASSWORD CHECK
+    // ==============================================
+    function loginUser() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      if (!email || !pass) return showMessage('Fill in all fields!', true);
+      
+      auth.signInWithEmailAndPassword(email, pass)
+        .then(() => showMessage('Login successful! ✅', false))
+        .catch(err => showMessage(err.message, true));
+    }
+
+    function registerUser() {
+      const email = document.getElementById('registerEmail').value.trim();
+      const pass = document.getElementById('registerPassword').value;
+      const confirmPass = document.getElementById('confirmPassword').value;
+      
+      if (!email || !pass || !confirmPass) {
+        return showMessage('Fill in all fields!', true);
+      }
+      if (pass.length < 6) {
+        return showMessage('Password must be at least 6 characters!', true);
+      }
+      if (pass !== confirmPass) {
+        return showMessage('❌ Passwords do not match! Please check both passwords.', true);
+      }
+      
+      auth.createUserWithEmailAndPassword(email, pass)
+        .then(() => showMessage('Account created successfully! ✅', false))
+        .catch(err => showMessage(err.message, true));
+    }
+
+    function resetPassword() {
+      const email = document.getElementById('resetEmail').value.trim();
+      if (!email) return showMessage('Enter your email!', true);
+      
+      auth.sendPasswordResetEmail(email)
+        .then(() => showMessage('Reset link sent! Check your email ✅', false))
+        .catch(err => showMessage(err.message, true));
+    }
+
+    function logoutUser() {
+      auth.signOut().then(() => showScreen('authScreen'));
+    }
+
+    // ==============================================
+    // AUTH STATE LISTENER
+    // ==============================================
+    auth.onAuthStateChanged(user => {
+      setTimeout(() => {
+        if (user) {
+          document.getElementById('userEmail').textContent = user.email;
+          showScreen('mainApp');
+          generateQRCode();
+        } else {
+          showScreen('authScreen');
+          showLoginForm();
+        }
+      }, 500);
+    });
+
+    // ==============================================
+    // QR CODE GENERATOR
+    // ==============================================
+    function generateQRCode() {
+      const el = document.getElementById('qrcode');
+      el.innerHTML = '';
+      const url = window.location.href;
+      QRCode.toCanvas(document.createElement('canvas'), url, { width: 200, margin: 2 }, function(err, canvas) {
+        if (!err) el.appendChild(canvas);
+      });
+    }
+  </script>
+
 </body>
 </html>
