@@ -119,59 +119,72 @@ body{background:#000;color:#e5e7eb}
 <!-- MAIN APP -->
 <div id="mainApp" class="hidden">
 
+<!-- SECOND PAGE: ADMIN DASHBOARD (hidden until opened) -->
+<section id="adminPage" class="hidden min-h-screen bg-[#0F0F0F] py-6">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <div class="flex items-center justify-between gap-3 mb-5">
+      <button onclick="closeAdminPage()" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white"><i class="fa-solid fa-arrow-left mr-2"></i>Back to SolarStart</button>
+      <span class="text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-3 py-2 rounded-lg"><i class="fa-solid fa-circle mr-1"></i>Realtime Admin</span>
+    </div>
+
+    <div class="beginner-card p-5 md:p-8 border border-green-500/30">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
+        <div>
+          <div class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-2xl text-green-400"></i><h2 class="text-2xl md:text-3xl font-bold text-green-400">Admin Dashboard</h2></div>
+          <p class="text-gray-400 mt-1">Real-time registered-user monitoring</p>
+          <p class="text-xs text-gray-500 mt-1">Admin account: <span id="adminEmailLabel"></span></p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <div class="admin-stat"><p class="text-xs text-gray-500">TOTAL USERS</p><p id="adminTotalUsers" class="text-2xl font-bold text-white">0</p></div>
+          <div class="admin-stat"><p class="text-xs text-gray-500">ONLINE</p><p id="adminOnlineUsers" class="text-2xl font-bold text-green-400">0</p></div>
+          <div class="admin-stat"><p class="text-xs text-gray-500">OFFLINE</p><p id="adminOfflineUsers" class="text-2xl font-bold text-gray-400">0</p></div>
+        </div>
+      </div>
+
+      <div id="adminDataMessage" class="hidden mb-5 p-4 rounded-lg border text-sm"></div>
+
+      <div class="flex flex-col md:flex-row gap-3 mb-5">
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+          <input id="adminUserSearch" oninput="renderAdminUsers()" placeholder="Search name or email..." class="w-full pl-10 pr-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+        </div>
+        <div class="flex items-center gap-2 px-4 py-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Realtime connected</div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm min-w-[760px]">
+          <thead><tr class="border-b border-gray-700 text-left"><th class="p-3 text-green-400">#</th><th class="p-3 text-green-400">User</th><th class="p-3 text-green-400">Email</th><th class="p-3 text-green-400">Gender</th><th class="p-3 text-green-400">Status</th><th class="p-3 text-green-400">Last Seen</th></tr></thead>
+          <tbody id="adminUsersTable"><tr><td colspan="6" class="p-8 text-center text-gray-500">Loading users...</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="mt-5 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/10 text-xs text-gray-400">
+        <i class="fa-solid fa-circle-info text-yellow-400 mr-1"></i>
+        Passwords are never displayed or stored in this dashboard. Firebase Authentication manages passwords.
+      </div>
+    </div>
+  </div>
+</section>
+
 <nav class="bg-[#1A1A1A] border-b border-yellow-400/20 shadow-lg sticky top-0 z-40">
 <div class="container mx-auto px-4 py-3 flex justify-between items-center">
 <div class="flex items-center gap-2"><i class="fa-solid fa-sun text-2xl text-yellow-400"></i><span class="font-bold text-lg text-yellow-400 hidden sm:inline">Solar Guide</span></div>
 <div class="flex items-center gap-3">
 <div class="flex items-center gap-2 bg-yellow-400/10 px-3 py-1.5 rounded-full border border-yellow-400/20"><i class="fa-solid fa-user text-yellow-400 text-sm"></i><span id="profileName" class="text-sm font-semibold text-yellow-400"></span></div>
 <span id="userEmail" class="text-xs text-gray-400 hidden md:inline"></span>
-<button id="adminNavButton" onclick="document.getElementById('adminDashboard').scrollIntoView({behavior:'smooth'})" class="hidden bg-green-500/20 hover:bg-green-500/30 text-green-400 px-3 py-1.5 rounded-lg text-sm border border-green-500/30"><i class="fa-solid fa-shield-halved mr-1"></i>Admin</button>
+<div class="relative">
+<button id="profileMenuButton" onclick="toggleProfileMenu()" class="bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 px-3 py-1.5 rounded-lg border border-yellow-400/20" aria-label="Profile menu"><i class="fa-solid fa-user"></i></button>
+<div id="profileMenu" class="hidden absolute right-0 mt-2 w-52 bg-[#1A1A1A] border border-gray-700 rounded-xl shadow-2xl p-2 z-50">
+  <div class="px-3 py-2 border-b border-gray-700 mb-1"><p id="menuUserName" class="font-semibold text-white text-sm"></p><p id="menuUserEmail" class="text-xs text-gray-500 truncate"></p></div>
+  <button id="adminMenuButton" onclick="openAdminPage()" class="hidden w-full text-left px-3 py-2 rounded-lg text-green-400 hover:bg-green-500/10"><i class="fa-solid fa-shield-halved mr-2"></i>Admin Dashboard</button>
+</div>
+</div>
 <button onclick="logoutUser()" class="bg-yellow-400/20 hover:bg-yellow-400/40 text-yellow-400 px-3 py-1.5 rounded-lg text-sm border border-yellow-400/30"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
 </div>
 </div>
 </nav>
 
-<!-- ADMIN DASHBOARD -->
-<section id="adminDashboard" class="hidden bg-gradient-to-b from-green-950/20 to-transparent py-8">
-<div class="container mx-auto px-4">
-<div class="beginner-card p-5 md:p-8 border border-green-500/30">
-
-<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
-<div>
-<div class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-2xl text-green-400"></i><h2 class="text-2xl md:text-3xl font-bold text-green-400">Admin Dashboard</h2></div>
-<p class="text-gray-400 mt-1">Real-time registered-user monitoring</p>
-<p class="text-xs text-gray-500 mt-1">Admin: jfaraon49@gmail.com</p>
-</div>
-<div class="flex flex-wrap gap-3">
-<div class="admin-stat"><p class="text-xs text-gray-500">TOTAL USERS</p><p id="adminTotalUsers" class="text-2xl font-bold text-white">0</p></div>
-<div class="admin-stat"><p class="text-xs text-gray-500">ONLINE</p><p id="adminOnlineUsers" class="text-2xl font-bold text-green-400">0</p></div>
-<div class="admin-stat"><p class="text-xs text-gray-500">OFFLINE</p><p id="adminOfflineUsers" class="text-2xl font-bold text-gray-400">0</p></div>
-</div>
-</div>
-
-<div class="flex flex-col md:flex-row gap-3 mb-5">
-<div class="relative flex-1">
-<i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
-<input id="adminUserSearch" oninput="renderAdminUsers()" placeholder="Search name or email..." class="w-full pl-10 pr-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
-</div>
-<div class="flex items-center gap-2 px-4 py-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Realtime connected</div>
-</div>
-
-<div class="overflow-x-auto">
-<table class="w-full text-sm">
-<thead><tr class="border-b border-gray-700 text-left"><th class="p-3 text-green-400">#</th><th class="p-3 text-green-400">User</th><th class="p-3 text-green-400">Email</th><th class="p-3 text-green-400">Gender</th><th class="p-3 text-green-400">Status</th><th class="p-3 text-green-400">Last Seen</th></tr></thead>
-<tbody id="adminUsersTable"><tr><td colspan="6" class="p-8 text-center text-gray-500">Loading users...</td></tr></tbody>
-</table>
-</div>
-
-<div class="mt-5 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/10 text-xs text-gray-400">
-<i class="fa-solid fa-circle-info text-yellow-400 mr-1"></i>
-Passwords are never displayed or stored in this dashboard. Firebase Authentication manages passwords.
-</div>
-</div>
-</div>
-</section>
-
+<div id="mainContentPage">
 <header class="bg-gradient-to-r from-yellow-400/10 to-orange-500/10 py-10 md:py-16">
 <div class="container mx-auto px-4 text-center">
 <h1 class="text-3xl md:text-5xl font-bold mb-4 gradient-text text-shadow-glow"><i class="fa-solid fa-sun text-yellow-400 mr-2"></i>Build Your Own Mini Solar Power System</h1>
@@ -325,6 +338,8 @@ Passwords are never displayed or stored in this dashboard. Firebase Authenticati
 </footer>
 </div>
 
+</div>
+
 <script>
 /* =========================
    FIREBASE
@@ -401,6 +416,12 @@ document.addEventListener("DOMContentLoaded",()=>{
  calculateSolar();restoreChecklist();
 });
 
+document.addEventListener("click",e=>{
+ const menu=document.getElementById("profileMenu");
+ const button=document.getElementById("profileMenuButton");
+ if(menu && !menu.contains(e.target) && !button?.contains(e.target)) closeProfileMenu();
+});
+
 /* =========================
    LOGIN / REGISTER
 ========================= */
@@ -470,49 +491,92 @@ function stopUserPresence(){
 }
 
 /* =========================
-   ADMIN
+   PROFILE MENU + ADMIN SECOND PAGE
 ========================= */
+function toggleProfileMenu(){
+  const menu=document.getElementById("profileMenu");
+  if(menu) menu.classList.toggle("hidden");
+}
+function closeProfileMenu(){
+  const menu=document.getElementById("profileMenu");
+  if(menu) menu.classList.add("hidden");
+}
+function openAdminPage(){
+  if(!isAdmin(auth.currentUser)) return;
+  closeProfileMenu();
+  document.getElementById("adminPage").classList.remove("hidden");
+  document.getElementById("mainContentPage").classList.add("hidden");
+  document.getElementById("adminEmailLabel").textContent=ADMIN_EMAIL;
+  window.scrollTo({top:0,behavior:"smooth"});
+  startAdminDashboard();
+}
+function closeAdminPage(){
+  document.getElementById("adminPage").classList.add("hidden");
+  document.getElementById("mainContentPage").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 function isAdmin(user){
  return !!(user&&user.email&&user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
 }
 function setupAdmin(user){
- const dashboard=document.getElementById("adminDashboard");
- const button=document.getElementById("adminNavButton");
-
+ const adminButton=document.getElementById("adminMenuButton");
  if(!isAdmin(user)){
-  dashboard.classList.add("hidden");
-  button.classList.add("hidden");
-  stopAdminDashboard();
-  return;
+   adminButton.classList.add("hidden");
+   closeAdminPage();
+   stopAdminDashboard();
+   return;
  }
-
- dashboard.classList.remove("hidden");
- button.classList.remove("hidden");
- startAdminDashboard();
+ adminButton.classList.remove("hidden");
+ document.getElementById("adminEmailLabel").textContent=ADMIN_EMAIL;
+}
+function showAdminMessage(text,error=true){
+ const el=document.getElementById("adminDataMessage");
+ if(!el)return;
+ el.classList.remove("hidden");
+ el.className="mb-5 p-4 rounded-lg border text-sm "+(error?"bg-red-500/10 border-red-500/30 text-red-300":"bg-green-500/10 border-green-500/30 text-green-300");
+ el.innerHTML=text;
+}
+function hideAdminMessage(){
+ const el=document.getElementById("adminDataMessage");
+ if(el)el.classList.add("hidden");
 }
 function startAdminDashboard(){
  stopAdminDashboard();
+ if(!isAdmin(auth.currentUser))return;
 
  const usersRef=db.collection("users");
  const presenceRef=realtimeDB.ref("presence");
 
  const userHandler=snap=>{
-  adminUsersData=[];
-  snap.forEach(doc=>adminUsersData.push({uid:doc.id,...doc.data()}));
-  adminUsersData.sort((a,b)=>{
-   const ta=a.createdAt?.toMillis?a.createdAt.toMillis():0;
-   const tb=b.createdAt?.toMillis?b.createdAt.toMillis():0;
-   return tb-ta;
-  });
-  renderAdminUsers();
+   adminUsersData=[];
+   snap.forEach(doc=>adminUsersData.push({uid:doc.id,...doc.data()}));
+   adminUsersData.sort((a,b)=>{
+     const getTime=v=>{
+       if(v&&typeof v.toMillis==="function")return v.toMillis();
+       if(v&&typeof v.seconds==="number")return v.seconds*1000;
+       if(v)return new Date(v).getTime()||0;
+       return 0;
+     };
+     return getTime(b.createdAt)-getTime(a.createdAt);
+   });
+   hideAdminMessage();
+   renderAdminUsers();
  };
  const presenceHandler=snap=>{
-  adminPresenceData=snap.val()||{};
-  renderAdminUsers();
+   adminPresenceData=snap.val()||{};
+   renderAdminUsers();
  };
 
- stopAdminFirestoreListener=usersRef.onSnapshot(userHandler,e=>console.error("Admin Firestore:",e));
- presenceRef.on("value",presenceHandler,e=>console.error("Admin presence:",e));
+ stopAdminFirestoreListener=usersRef.onSnapshot(userHandler,error=>{
+   console.error("Admin Firestore read error:",error);
+   showAdminMessage("<b>Hindi mabasa ang users sa Firestore.</b><br><span class='text-xs'>"+escapeHTML(error.code||error.message||"Permission denied")+"</span><br><br>Please check your Firestore Security Rules and make sure the admin email is allowed to read <code>users</code>.");
+   adminUsersData=[];
+   renderAdminUsers();
+ });
+ presenceRef.on("value",presenceHandler,error=>{
+   console.error("Admin presence error:",error);
+   showAdminMessage("Realtime presence is unavailable. Enable Firebase Realtime Database and check its rules.");
+ });
  stopAdminPresenceListener=()=>presenceRef.off("value",presenceHandler);
 }
 function stopAdminDashboard(){
@@ -523,39 +587,35 @@ function stopAdminDashboard(){
 function renderAdminUsers(){
  const table=document.getElementById("adminUsersTable");
  if(!table)return;
-
- const search=(document.getElementById("adminUserSearch").value||"").toLowerCase().trim();
+ const input=document.getElementById("adminUserSearch");
+ const search=(input?input.value:"").toLowerCase().trim();
  const filtered=adminUsersData.filter(u=>{
-  const name=`${u.firstName||""} ${u.lastName||""}`.toLowerCase();
-  return name.includes(search)||(u.email||"").toLowerCase().includes(search);
+   const name=`${u.firstName||""} ${u.lastName||""}`.toLowerCase();
+   return name.includes(search)||(u.email||"").toLowerCase().includes(search);
  });
-
  let online=0;
  table.innerHTML="";
-
  if(!filtered.length){
-  table.innerHTML='<tr><td colspan="6" class="p-8 text-center text-gray-500"><i class="fa-solid fa-users-slash text-3xl mb-2 block"></i>No users found.</td></tr>';
+   table.innerHTML='<tr><td colspan="6" class="p-8 text-center text-gray-500"><i class="fa-solid fa-users-slash text-3xl mb-2 block"></i>'+(adminUsersData.length?'No users match your search.':'No user documents found in Firestore.')+'</td></tr>';
  }else{
-  filtered.forEach((u,i)=>{
-   const p=adminPresenceData[u.uid]||{};
-   const connections=p.connections||{};
-   const isOnline=Object.keys(connections).length>0;
-   if(isOnline)online++;
-
-   const tr=document.createElement("tr");
-   tr.className="border-b border-gray-800 hover:bg-white/5";
-   const name=`${u.firstName||""} ${u.lastName||""}`.trim()||"Unknown User";
-   tr.innerHTML=`
-    <td class="p-3">${i+1}</td>
-    <td class="p-3"><div class="font-semibold text-white">${escapeHTML(name)}</div><div class="text-xs text-gray-600">${escapeHTML(u.uid)}</div></td>
-    <td class="p-3 text-gray-300">${escapeHTML(u.email||"")}</td>
-    <td class="p-3 text-gray-400">${escapeHTML(u.gender||"—")}</td>
-    <td class="p-3">${isOnline?'<span class="inline-flex items-center gap-2 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Online</span>':'<span class="inline-flex items-center gap-2 text-gray-500"><span class="w-2 h-2 rounded-full bg-gray-600"></span>Offline</span>'}</td>
-    <td class="p-3 text-gray-400">${p.lastOnline?formatLastSeen(p.lastOnline):"Never"}</td>`;
-   table.appendChild(tr);
-  });
+   filtered.forEach((u,i)=>{
+     const p=adminPresenceData[u.uid]||{};
+     const connections=p.connections||{};
+     const isOnline=Object.keys(connections).length>0;
+     if(isOnline)online++;
+     const tr=document.createElement("tr");
+     tr.className="border-b border-gray-800 hover:bg-white/5";
+     const name=`${u.firstName||""} ${u.lastName||""}`.trim()||"Unknown User";
+     tr.innerHTML=`
+       <td class="p-3">${i+1}</td>
+       <td class="p-3"><div class="font-semibold text-white">${escapeHTML(name)}</div><div class="text-xs text-gray-600">${escapeHTML(u.uid)}</div></td>
+       <td class="p-3 text-gray-300">${escapeHTML(u.email||"")}</td>
+       <td class="p-3 text-gray-400">${escapeHTML(u.gender||"—")}</td>
+       <td class="p-3">${isOnline?'<span class="inline-flex items-center gap-2 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Online</span>':'<span class="inline-flex items-center gap-2 text-gray-500"><span class="w-2 h-2 rounded-full bg-gray-600"></span>Offline</span>'}</td>
+       <td class="p-3 text-gray-400">${p.lastOnline?formatLastSeen(p.lastOnline):"Never"}</td>`;
+     table.appendChild(tr);
+   });
  }
-
  document.getElementById("adminTotalUsers").textContent=adminUsersData.length;
  document.getElementById("adminOnlineUsers").textContent=online;
  document.getElementById("adminOfflineUsers").textContent=Math.max(0,adminUsersData.length-online);
@@ -568,6 +628,7 @@ function formatLastSeen(ts){
 function escapeHTML(v){
  return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
+
 function logoutUser(){
  stopUserPresence();
  auth.signOut().catch(console.error);
@@ -586,7 +647,10 @@ auth.onAuthStateChanged(user=>{
 
   db.collection("users").doc(user.uid).get().then(doc=>{
    const d=doc.exists?doc.data():{};
-   document.getElementById("profileName").textContent=`${d.firstName||""} ${d.lastName||""}`.trim()||"User";
+   const fullName=`${d.firstName||""} ${d.lastName||""}`.trim()||"User";
+   document.getElementById("profileName").textContent=fullName;
+   document.getElementById("menuUserName").textContent=fullName;
+   document.getElementById("menuUserEmail").textContent=user.email||"";
   }).catch(console.error);
 
   generateQRCode();
@@ -595,8 +659,10 @@ auth.onAuthStateChanged(user=>{
   stopAdminDashboard();
   document.getElementById("mainApp").classList.add("hidden");
   document.getElementById("authScreen").classList.remove("hidden");
-  document.getElementById("adminDashboard").classList.add("hidden");
-  document.getElementById("adminNavButton").classList.add("hidden");
+  document.getElementById("adminPage").classList.add("hidden");
+  document.getElementById("mainContentPage").classList.remove("hidden");
+  document.getElementById("adminMenuButton").classList.add("hidden");
+  closeProfileMenu();
   showLoginForm();
  }
 });
