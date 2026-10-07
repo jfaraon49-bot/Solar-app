@@ -14,11 +14,7 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
 <script>
-tailwind.config={
-  theme:{extend:{colors:{
-    solar:{yellow:'#FBBF24',orange:'#F97316',dark:'#0F0F0F',black:'#000000',card:'#1A1A1A',input:'#2A2A2A'}
-  }}}
-};
+tailwind.config={theme:{extend:{colors:{solar:{yellow:'#FBBF24',orange:'#F97316',dark:'#0F0F0F',black:'#000000',card:'#1A1A1A',input:'#2A2A2A'}}}}};
 </script>
 
 <style>
@@ -41,6 +37,11 @@ body{background:#000;color:#e5e7eb}
 .faq-icon{transition:transform .25s}.faq-item.open .faq-icon{transform:rotate(180deg)}
 .nav-scroll{overflow-x:auto;scrollbar-width:none}.nav-scroll::-webkit-scrollbar{display:none}
 .admin-stat{background:linear-gradient(145deg,#181818,#101010);border:1px solid rgba(74,222,128,.18);border-radius:1rem;padding:1rem}
+.chat-message-user{background:linear-gradient(135deg,#FBBF24,#F97316);color:#111827;border-radius:1rem 1rem .25rem 1rem}
+.chat-message-admin{background:#242424;color:#e5e7eb;border:1px solid rgba(251,191,36,.12);border-radius:1rem 1rem 1rem .25rem}
+.chat-scroll{scrollbar-width:thin;scrollbar-color:#4b5563 transparent}
+.chat-scroll::-webkit-scrollbar{width:6px}.chat-scroll::-webkit-scrollbar-thumb{background:#4b5563;border-radius:999px}
+
 @media(max-width:767px){.nav-scroll{overflow-x:auto}}
 </style>
 </head>
@@ -48,1076 +49,947 @@ body{background:#000;color:#e5e7eb}
 <body class="bg-black font-sans text-gray-200 antialiased">
 
 <div id="loadingScreen" class="fixed inset-0 bg-black flex items-center justify-center z-50">
-  <div class="text-center">
-    <i class="fa-solid fa-sun text-6xl text-yellow-400 animate-spin mb-4"></i>
-    <p class="text-xl font-semibold text-yellow-400">Loading Solar Guide...</p>
-  </div>
+  <div class="text-center"><i class="fa-solid fa-sun text-6xl text-yellow-400 animate-spin mb-4"></i><p class="text-xl font-semibold text-yellow-400">Loading Solar Guide...</p></div>
 </div>
 
 <div id="authScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-gray-900 p-4 hidden">
-  <div class="w-full max-w-xl">
-    <div class="bg-[#1A1A1A] rounded-2xl p-6 md:p-8 border-2 border-green-500/50 shadow-2xl">
-      <div class="text-center mb-8">
-        <i class="fa-solid fa-sun text-5xl text-yellow-400 mb-3"></i>
-        <h1 class="text-2xl md:text-3xl font-bold gradient-text text-shadow-glow">☀️ POWER YOUR LIFE ☀️</h1>
-        <p class="text-gray-400 mt-2">Build Your Own Mini Solar Power System</p>
-      </div>
+<div class="w-full max-w-xl"><div class="bg-[#1A1A1A] rounded-2xl p-6 md:p-8 border-2 border-green-500/50 shadow-2xl">
+<div class="text-center mb-8"><i class="fa-solid fa-sun text-5xl text-yellow-400 mb-3"></i><h1 class="text-2xl md:text-3xl font-bold gradient-text text-shadow-glow">☀️ POWER YOUR LIFE ☀️</h1><p class="text-gray-400 mt-2">Build Your Own Mini Solar Power System</p></div>
 
-      <div id="loginForm">
-        <h2 class="text-3xl font-bold mb-2">Welcome Back</h2>
-        <p class="text-gray-500 text-sm mb-6">Login to continue to your Solar Guide</p>
-        <div class="space-y-4">
-          <input id="loginEmail" type="email" placeholder="Email address" autocomplete="email" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
-          <div class="input-group">
-            <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" class="w-full px-4 py-3 pr-10 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
-            <i id="loginEye" class="fa-solid fa-eye eye-icon" onclick="togglePassword('loginPassword','loginEye')"></i>
-          </div>
-          <button onclick="loginUser()" class="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-bold py-3 rounded-lg">Login</button>
-        </div>
-        <div class="text-center mt-4 space-y-2">
-          <a href="#" onclick="showResetForm();return false" class="text-gray-400 hover:text-green-400">Forgot Password?</a>
-          <p>Don't have an account? <a href="#" onclick="showRegisterForm();return false" class="text-green-400 font-semibold">Sign Up</a></p>
-        </div>
-      </div>
-
-      <div id="registerForm" class="hidden">
-        <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Create Account</h2>
-        <div class="space-y-3">
-          <div class="grid grid-cols-2 gap-3">
-            <div><input id="firstName" type="text" maxlength="30" placeholder="First Name" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white"><p id="firstNameCounter" class="text-xs text-gray-500 text-right">0 / 30</p></div>
-            <div><input id="lastName" type="text" maxlength="30" placeholder="Last Name" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white"><p id="lastNameCounter" class="text-xs text-gray-500 text-right">0 / 30</p></div>
-          </div>
-          <input id="registerEmail" type="email" placeholder="Email address" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white">
-          <div class="input-group">
-            <input id="registerPassword" type="password" placeholder="Password (6+ characters)" class="w-full px-4 py-3 pr-10 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white">
-            <i id="registerEye" class="fa-solid fa-eye eye-icon" onclick="togglePassword('registerPassword','registerEye')"></i>
-          </div>
-          <div class="input-group">
-            <input id="confirmPassword" type="password" placeholder="Confirm Password" class="w-full px-4 py-3 pr-10 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white">
-            <i id="confirmEye" class="fa-solid fa-eye eye-icon" onclick="togglePassword('confirmPassword','confirmEye')"></i>
-          </div>
-          <p id="passwordMatch" class="text-sm hidden"></p>
-          <div class="grid grid-cols-2 gap-3">
-            <input id="birthdate" type="date" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white">
-            <select id="gender" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white">
-              <option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option>
-            </select>
-          </div>
-          <button onclick="registerUser()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 rounded-lg">Sign Up</button>
-        </div>
-        <p class="text-center mt-4 text-gray-400">Already have an account? <a href="#" onclick="showLoginForm();return false" class="text-orange-400 font-semibold">Log In</a></p>
-      </div>
-
-      <div id="resetForm" class="hidden">
-        <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Reset Password</h2>
-        <p class="text-gray-400 text-center mb-4">Enter your email — we'll send a reset link.</p>
-        <input id="resetEmail" type="email" placeholder="Email address" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white mb-4">
-        <button onclick="resetPassword()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 rounded-lg">Send Reset Link</button>
-        <p class="text-center mt-4"><a href="#" onclick="showLoginForm();return false" class="text-yellow-400">← Back to Login</a></p>
-      </div>
-      <div id="authMessage" class="mt-4 text-center hidden"></div>
-    </div>
-  </div>
+<div id="loginForm">
+<h2 class="text-3xl font-bold mb-2">Welcome Back</h2><p class="text-gray-500 text-sm mb-6">Login to continue to your Solar Guide</p>
+<div class="space-y-4">
+<input id="loginEmail" type="email" placeholder="Email address" autocomplete="email" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+<div class="input-group"><input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" class="w-full px-4 py-3 pr-10 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-400"><i id="loginEye" class="fa-solid fa-eye eye-icon" onclick="togglePassword('loginPassword','loginEye')"></i></div>
+<button onclick="loginUser()" class="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-bold py-3 rounded-lg">Login</button>
 </div>
+<div class="text-center mt-4 space-y-2"><a href="#" onclick="showResetForm();return false" class="text-gray-400 hover:text-green-400">Forgot Password?</a><p>Don't have an account? <a href="#" onclick="showRegisterForm();return false" class="text-green-400 font-semibold">Sign Up</a></p></div>
+</div>
+
+<div id="registerForm" class="hidden">
+<h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Create Account</h2>
+<div class="space-y-3">
+<div class="grid grid-cols-2 gap-3">
+<div><input id="firstName" type="text" maxlength="30" placeholder="First Name" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white"><p id="firstNameCounter" class="text-xs text-gray-500 text-right">0 / 30</p></div>
+<div><input id="lastName" type="text" maxlength="30" placeholder="Last Name" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white"><p id="lastNameCounter" class="text-xs text-gray-500 text-right">0 / 30</p></div>
+</div>
+<input id="registerEmail" type="email" placeholder="Email address" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white">
+<div class="input-group"><input id="registerPassword" type="password" placeholder="Password (6+ characters)" class="w-full px-4 py-3 pr-10 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white"><i id="registerEye" class="fa-solid fa-eye eye-icon" onclick="togglePassword('registerPassword','registerEye')"></i></div>
+<div class="input-group"><input id="confirmPassword" type="password" placeholder="Confirm Password" class="w-full px-4 py-3 pr-10 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white"><i id="confirmEye" class="fa-solid fa-eye eye-icon" onclick="togglePassword('confirmPassword','confirmEye')"></i></div>
+<p id="passwordMatch" class="text-sm hidden"></p>
+<div class="grid grid-cols-2 gap-3"><input id="birthdate" type="date" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white"><select id="gender" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white"><option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+<button onclick="registerUser()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 rounded-lg">Sign Up</button>
+</div>
+<p class="text-center mt-4 text-gray-400">Already have an account? <a href="#" onclick="showLoginForm();return false" class="text-orange-400 font-semibold">Log In</a></p>
+</div>
+
+<div id="resetForm" class="hidden">
+<h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Reset Password</h2><p class="text-gray-400 text-center mb-4">Enter your email — we'll send a reset link.</p>
+<input id="resetEmail" type="email" placeholder="Email address" class="w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white mb-4">
+<button onclick="resetPassword()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 rounded-lg">Send Reset Link</button>
+<p class="text-center mt-4"><a href="#" onclick="showLoginForm();return false" class="text-yellow-400">← Back to Login</a></p>
+</div>
+<div id="authMessage" class="mt-4 text-center hidden"></div>
+</div></div></div>
 
 <div id="mainApp" class="hidden">
 
 <section id="adminPage" class="hidden min-h-screen bg-[#0F0F0F] py-6">
-  <div class="container mx-auto px-4 max-w-6xl">
-    <div class="flex items-center justify-between gap-3 mb-5">
-      <button onclick="closeAdminPage()" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white">
-        <i class="fa-solid fa-arrow-left mr-2"></i>Back to SolarStart
-      </button>
-      <span class="text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-3 py-2 rounded-lg">
-        <i class="fa-solid fa-circle mr-1"></i>Realtime Admin
-      </span>
-    </div>
+<div class="container mx-auto px-4 max-w-6xl">
+<div class="flex items-center justify-between gap-3 mb-5">
+<button onclick="closeAdminPage()" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white"><i class="fa-solid fa-arrow-left mr-2"></i>Back to SolarStart</button>
+<span class="text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-3 py-2 rounded-lg"><i class="fa-solid fa-circle mr-1"></i>Realtime Admin</span>
+</div>
+<div class="beginner-card p-5 md:p-8 border border-green-500/30">
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
+<div><div class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-2xl text-green-400"></i><h2 class="text-2xl md:text-3xl font-bold text-green-400">Admin Dashboard</h2></div><p class="text-gray-400 mt-1">Real-time registered-user monitoring</p><p class="text-xs text-gray-500 mt-1">Admin account: <span id="adminEmailLabel"></span></p></div>
+<div class="flex flex-wrap gap-3">
+<div class="admin-stat"><p class="text-xs text-gray-500">TOTAL USERS</p><p id="adminTotalUsers" class="text-2xl font-bold text-white">0</p></div>
+<div class="admin-stat"><p class="text-xs text-gray-500">ONLINE</p><p id="adminOnlineUsers" class="text-2xl font-bold text-green-400">0</p></div>
+<div class="admin-stat"><p class="text-xs text-gray-500">OFFLINE</p><p id="adminOfflineUsers" class="text-2xl font-bold text-gray-400">0</p></div>
+</div></div>
+<div id="adminDataMessage" class="hidden mb-5 p-4 rounded-lg border text-sm"></div>
+<div class="flex flex-col md:flex-row gap-3 mb-5">
+<div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i><input id="adminUserSearch" oninput="renderAdminUsers()" placeholder="Search name or email..." class="w-full pl-10 pr-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-400"></div>
+<div class="flex items-center gap-2 px-4 py-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Realtime connected</div>
+</div>
+<div class="overflow-x-auto"><table class="w-full text-sm min-w-[760px]"><thead><tr class="border-b border-gray-700 text-left"><th class="p-3 text-green-400">#</th><th class="p-3 text-green-400">User</th><th class="p-3 text-green-400">Email</th><th class="p-3 text-green-400">Gender</th><th class="p-3 text-green-400">Status</th><th class="p-3 text-green-400">Last Seen</th></tr></thead><tbody id="adminUsersTable"><tr><td colspan="6" class="p-8 text-center text-gray-500">Loading users...</td></tr></tbody></table></div>
+<div class="mt-7 border border-yellow-400/15 rounded-2xl overflow-hidden bg-black/20">
+<div class="p-4 border-b border-gray-800 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+<div><h3 class="text-xl font-bold text-yellow-400"><i class="fa-solid fa-comments mr-2"></i>Support Chats</h3><p class="text-xs text-gray-500">Real-time customer support conversations</p></div>
+<div class="text-xs text-green-400"><span class="w-2 h-2 rounded-full bg-green-400 inline-block mr-1 animate-pulse"></span>Live chat connected</div>
+</div>
+<div class="grid lg:grid-cols-[300px_1fr] min-h-[520px]">
+<div class="border-r border-gray-800 bg-black/20">
+<div class="p-3 border-b border-gray-800"><input id="adminChatSearch" oninput="renderAdminChatList()" placeholder="Search conversations..." class="w-full px-3 py-2 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"></div>
+<div id="adminChatList" class="max-h-[470px] overflow-y-auto chat-scroll"><div class="p-5 text-center text-gray-500 text-sm">No conversations yet.</div></div>
+</div>
+<div class="flex flex-col min-h-[520px]">
+<div id="adminChatHeader" class="p-4 border-b border-gray-800"><p class="font-bold text-white">Select a conversation</p><p class="text-xs text-gray-500">User messages will appear here in real time.</p></div>
+<div id="adminChatMessages" class="flex-1 p-4 overflow-y-auto chat-scroll space-y-3 max-h-[390px]"><div class="h-full flex items-center justify-center text-gray-600 text-sm">Choose a user from the left.</div></div>
+<div id="adminChatComposer" class="hidden p-3 border-t border-gray-800 flex gap-2">
+<input id="adminChatInput" onkeydown="if(event.key==='Enter')sendAdminChatMessage()" placeholder="Type a reply..." class="flex-1 px-3 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+<button onclick="sendAdminChatMessage()" class="px-4 py-3 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold"><i class="fa-solid fa-paper-plane"></i></button>
+</div>
+</div>
+</div>
+</div>
 
-    <div class="beginner-card p-5 md:p-8 border border-green-500/30">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
-        <div>
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-shield-halved text-2xl text-green-400"></i>
-            <h2 class="text-2xl md:text-3xl font-bold text-green-400">Admin Dashboard</h2>
-          </div>
-          <p class="text-gray-400 mt-1">Real-time registered-user monitoring</p>
-          <p class="text-xs text-gray-500 mt-1">Admin account: <span id="adminEmailLabel"></span></p>
-        </div>
-        <div class="flex flex-wrap gap-3">
-          <div class="admin-stat"><p class="text-xs text-gray-500">TOTAL USERS</p><p id="adminTotalUsers" class="text-2xl font-bold text-white">0</p></div>
-          <div class="admin-stat"><p class="text-xs text-gray-500">ONLINE</p><p id="adminOnlineUsers" class="text-2xl font-bold text-green-400">0</p></div>
-          <div class="admin-stat"><p class="text-xs text-gray-500">OFFLINE</p><p id="adminOfflineUsers" class="text-2xl font-bold text-gray-400">0</p></div>
-        </div>
-      </div>
-
-      <div id="adminDataMessage" class="hidden mb-5 p-4 rounded-lg border text-sm"></div>
-
-      <div class="flex flex-col md:flex-row gap-3 mb-5">
-        <div class="relative flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
-          <input id="adminUserSearch" oninput="renderAdminUsers()" placeholder="Search name or email..." class="w-full pl-10 pr-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
-        </div>
-        <div class="flex items-center gap-2 px-4 py-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
-          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Realtime connected
-        </div>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm min-w-[780px]">
-          <thead>
-            <tr class="border-b border-gray-700 text-left">
-              <th class="p-3 text-green-400">#</th>
-              <th class="p-3 text-green-400">User</th>
-              <th class="p-3 text-green-400">Email</th>
-              <th class="p-3 text-green-400">Gender</th>
-              <th class="p-3 text-green-400">Status</th>
-              <th class="p-3 text-green-400">Last Seen</th>
-            </tr>
-          </thead>
-          <tbody id="adminUsersTable">
-            <tr><td colspan="6" class="p-8 text-center text-gray-500">Loading users...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="mt-5 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/10 text-xs text-gray-400">
-        <i class="fa-solid fa-circle-info text-yellow-400 mr-1"></i>
-        Passwords are never displayed or stored in this dashboard. Firebase Authentication manages passwords.
-      </div>
-    </div>
-  </div>
-</section>
+<div class="mt-5 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/10 text-xs text-gray-400"><i class="fa-solid fa-circle-info text-yellow-400 mr-1"></i>Passwords are never displayed or stored in this dashboard. Firebase Authentication manages passwords.</div>
+</div></div></section>
 
 <nav class="bg-[#1A1A1A] border-b border-yellow-400/20 shadow-lg sticky top-0 z-40">
-  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-    <div class="flex items-center gap-2">
-      <i class="fa-solid fa-sun text-2xl text-yellow-400"></i>
-      <span class="font-bold text-lg text-yellow-400 hidden sm:inline">Solar Guide</span>
-    </div>
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-2 bg-yellow-400/10 px-3 py-1.5 rounded-full border border-yellow-400/20">
-        <i class="fa-solid fa-user text-yellow-400 text-sm"></i>
-        <span id="profileName" class="text-sm font-semibold text-yellow-400"></span>
-      </div>
-      <span id="userEmail" class="text-xs text-gray-400 hidden md:inline"></span>
-      <div class="relative">
-        <button id="profileMenuButton" onclick="toggleProfileMenu()" class="bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 px-3 py-1.5 rounded-lg border border-yellow-400/20" aria-label="Profile menu">
-          <i class="fa-solid fa-user"></i>
-        </button>
-        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-56 bg-[#1A1A1A] border border-gray-700 rounded-xl shadow-2xl p-2 z-50">
-          <div class="px-3 py-2 border-b border-gray-700 mb-1">
-            <p id="menuUserName" class="font-semibold text-white text-sm"></p>
-            <p id="menuUserEmail" class="text-xs text-gray-500 truncate"></p>
-          </div>
-          <button id="adminMenuButton" onclick="openAdminPage()" class="hidden w-full text-left px-3 py-2 rounded-lg text-green-400 hover:bg-green-500/10">
-            <i class="fa-solid fa-shield-halved mr-2"></i>Admin Dashboard
-          </button>
-        </div>
-      </div>
-      <button onclick="logoutUser()" class="bg-yellow-400/20 hover:bg-yellow-400/40 text-yellow-400 px-3 py-1.5 rounded-lg text-sm border border-yellow-400/30">
-        <i class="fa-solid fa-right-from-bracket mr-1"></i>Logout
-      </button>
-    </div>
-  </div>
-</nav>
+<div class="container mx-auto px-4 py-3 flex justify-between items-center">
+<div class="flex items-center gap-2"><i class="fa-solid fa-sun text-2xl text-yellow-400"></i><span class="font-bold text-lg text-yellow-400 hidden sm:inline">Solar Guide</span></div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 bg-yellow-400/10 px-3 py-1.5 rounded-full border border-yellow-400/20"><i class="fa-solid fa-user text-yellow-400 text-sm"></i><span id="profileName" class="text-sm font-semibold text-yellow-400"></span></div>
+<span id="userEmail" class="text-xs text-gray-400 hidden md:inline"></span>
+<div class="relative"><button id="profileMenuButton" onclick="toggleProfileMenu()" class="bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 px-3 py-1.5 rounded-lg border border-yellow-400/20"><i class="fa-solid fa-user"></i></button>
+<div id="profileMenu" class="hidden absolute right-0 mt-2 w-52 bg-[#1A1A1A] border border-gray-700 rounded-xl shadow-2xl p-2 z-50">
+<div class="px-3 py-2 border-b border-gray-700 mb-1"><p id="menuUserName" class="font-semibold text-white text-sm"></p><p id="menuUserEmail" class="text-xs text-gray-500 truncate"></p></div>
+<button id="adminMenuButton" onclick="openAdminPage()" class="hidden w-full text-left px-3 py-2 rounded-lg text-green-400 hover:bg-green-500/10"><i class="fa-solid fa-shield-halved mr-2"></i>Admin Dashboard</button>
+</div></div>
+<button onclick="logoutUser()" class="bg-yellow-400/20 hover:bg-yellow-400/40 text-yellow-400 px-3 py-1.5 rounded-lg text-sm border border-yellow-400/30"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
+</div></div></nav>
+
+<!-- CUSTOMER CHAT SUPPORT -->
+<button id="chatSupportButton" onclick="toggleChatSupport()" class="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black shadow-2xl flex items-center justify-center hover:scale-105 transition" title="Chat Support">
+<i class="fa-solid fa-comments text-xl"></i><span id="chatUnreadBadge" class="hidden absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold items-center justify-center">0</span>
+</button>
+
+<div id="chatSupportPanel" class="hidden fixed bottom-24 right-4 left-4 sm:left-auto z-50 w-auto sm:w-[390px] h-[560px] bg-[#111] border border-yellow-400/20 rounded-2xl shadow-2xl overflow-hidden">
+<div class="h-full flex flex-col">
+<div class="p-4 bg-gradient-to-r from-yellow-400/15 to-orange-500/10 border-b border-gray-800 flex items-center justify-between">
+<div><div class="font-bold text-yellow-400"><i class="fa-solid fa-headset mr-2"></i>SolarStart Support</div><div class="text-xs text-gray-500"><span class="text-green-400">●</span> Usually replies in real time</div></div>
+<button onclick="toggleChatSupport()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+</div>
+<div id="userChatMessages" class="flex-1 p-4 overflow-y-auto chat-scroll space-y-3"><div class="text-center text-gray-600 text-sm py-10">Loading chat...</div></div>
+<div class="p-3 border-t border-gray-800">
+<div class="flex gap-2"><input id="userChatInput" onkeydown="if(event.key==='Enter')sendUserChatMessage()" placeholder="Type your message..." maxlength="1000" class="flex-1 px-3 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400">
+<button onclick="sendUserChatMessage()" class="w-12 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold"><i class="fa-solid fa-paper-plane"></i></button></div>
+<p class="text-[10px] text-gray-600 mt-2">Please don't send passwords, payment details, or other sensitive information.</p>
+</div></div></div>
 
 <div id="mainContentPage">
-<header class="bg-gradient-to-r from-yellow-400/10 to-orange-500/10 py-10 md:py-16">
-  <div class="container mx-auto px-4 text-center">
-    <h1 class="text-3xl md:text-5xl font-bold mb-4 gradient-text text-shadow-glow">
-      <i class="fa-solid fa-sun text-yellow-400 mr-2"></i>Build Your Own Mini Solar Power System
-    </h1>
-    <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-6">
-      Complete Step-by-Step Guide — <strong>English + Tagalog</strong> — with Component Prices & Shop Links
-    </p>
-    <div class="bg-[#1A1A1A] rounded-xl shadow-md p-4 max-w-md mx-auto border-2 border-orange-500">
-      <p class="font-semibold text-yellow-400">⚡ All prices in Philippine Peso (₱) — Links to Shopee included!</p>
-    </div>
-  </div>
-</header>
+<header class="bg-gradient-to-r from-yellow-400/10 to-orange-500/10 py-10 md:py-16"><div class="container mx-auto px-4 text-center">
+<h1 class="text-3xl md:text-5xl font-bold mb-4 gradient-text text-shadow-glow"><i class="fa-solid fa-sun text-yellow-400 mr-2"></i>Build Your Own Mini Solar Power System</h1>
+<p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-6">Complete Step-by-Step Guide — <strong>English + Tagalog</strong> — with Component Prices & Shop Links</p>
+<div class="bg-[#1A1A1A] rounded-xl shadow-md p-4 max-w-md mx-auto border-2 border-orange-500"><p class="font-semibold text-yellow-400">⚡ All prices in Philippine Peso (₱) — Links to Shopee included!</p></div>
+</div></header>
 
-<div class="sticky top-[57px] md:top-[65px] z-30 bg-black/95 backdrop-blur border-b border-yellow-400/10">
-  <div class="container mx-auto px-4">
-    <div class="nav-scroll flex gap-2 py-3">
-      <a href="#start-here" class="info-chip">🚀 Start Here</a>
-      <a href="#system-overview" class="info-chip">🔌 How It Works</a>
-      <a href="#sizing-guide" class="info-chip">🧮 Sizing</a>
-      <a href="#components" class="info-chip">🛒 Parts</a>
-      <a href="#build-guide" class="info-chip">🛠️ Build</a>
-      <a href="#safety" class="info-chip">🛡️ Safety</a>
-      <a href="#troubleshooting" class="info-chip">🔧 Fix It</a>
-      <a href="#faq" class="info-chip">❓ FAQ</a>
-    </div>
-  </div>
-</div>
+<div class="sticky top-[57px] md:top-[65px] z-30 bg-black/95 backdrop-blur border-b border-yellow-400/10"><div class="container mx-auto px-4"><div class="nav-scroll flex gap-2 py-3">
+<a href="#start-here" class="info-chip">🚀 Start Here</a><a href="#system-overview" class="info-chip">🔌 How It Works</a><a href="#sizing-guide" class="info-chip">🧮 Sizing</a><a href="#components" class="info-chip">🛒 Parts</a><a href="#build-guide" class="info-chip">🛠️ Build</a><a href="#safety" class="info-chip">🛡️ Safety</a><a href="#troubleshooting" class="info-chip">🔧 Fix It</a><a href="#faq" class="info-chip">❓ FAQ</a>
+</div></div></div>
 
 <main class="container mx-auto px-4 py-8">
 
-<section id="start-here" class="mb-14">
-  <div class="beginner-card p-6 md:p-8">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-      <div>
-        <div class="flex flex-wrap gap-2 mb-3">
-          <span class="info-chip">👋 Beginner friendly</span>
-          <span class="info-chip">🇵🇭 Philippines</span>
-          <span class="info-chip">🔋 12V example system</span>
-        </div>
-        <h2 class="text-3xl md:text-4xl font-bold text-white mb-3">Start Here — Your First Mini Solar System</h2>
-        <p class="text-gray-300 max-w-3xl leading-7">
-          This guide takes you from <strong class="text-yellow-400">“I have no idea where to start”</strong>
-          to a small, organized solar setup. Read the safety notes first, understand the power flow,
-          then choose components and follow the build sequence.
-        </p>
-      </div>
-      <div class="bg-yellow-400/10 border border-yellow-400/20 rounded-xl p-5 md:min-w-[250px]">
-        <p class="text-sm text-gray-400">Recommended learning order</p>
-        <p class="text-lg font-bold text-yellow-400 mt-1">Learn → Size → Buy → Wire → Test</p>
-      </div>
-    </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-7">
-      <div class="metric"><div class="text-2xl">☀️</div><p class="font-semibold">1. Solar panel</p><p class="text-xs text-gray-400">Makes electrical energy.</p></div>
-      <div class="metric"><div class="text-2xl">🧠</div><p class="font-semibold">2. Charge controller</p><p class="text-xs text-gray-400">Manages battery charging.</p></div>
-      <div class="metric"><div class="text-2xl">🔋</div><p class="font-semibold">3. Battery</p><p class="text-xs text-gray-400">Stores energy for later.</p></div>
-      <div class="metric"><div class="text-2xl">📱</div><p class="font-semibold">4. Load</p><p class="text-xs text-gray-400">Uses the stored energy.</p></div>
-    </div>
-    <div class="mt-6 bg-blue-950/30 border border-blue-400/20 rounded-xl p-4">
-      <p class="text-sm text-blue-100"><strong>💡 Beginner tip:</strong> Start with a simple low-power DC project such as USB lights or phone charging. Larger appliances require a different design, larger protection devices, suitable cable sizes, and often an inverter.</p>
-    </div>
-  </div>
-</section>
+<section id="start-here" class="mb-14"><div class="beginner-card p-6 md:p-8">
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5"><div>
+<div class="flex flex-wrap gap-2 mb-3"><span class="info-chip">👋 Beginner friendly</span><span class="info-chip">🇵🇭 Philippines</span><span class="info-chip">🔋 12V example system</span></div>
+<h2 class="text-3xl md:text-4xl font-bold text-white mb-3">Start Here — Your First Mini Solar System</h2>
+<p class="text-gray-300 max-w-3xl leading-7">This guide takes you from <strong class="text-yellow-400">“I have no idea where to start”</strong> to a small, organized solar setup. Read the safety notes first, understand the power flow, then choose components and follow the build sequence.</p>
+</div><div class="bg-yellow-400/10 border border-yellow-400/20 rounded-xl p-5 md:min-w-[250px]"><p class="text-sm text-gray-400">Recommended learning order</p><p class="text-lg font-bold text-yellow-400 mt-1">Learn → Size → Buy → Wire → Test</p></div></div>
+<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-7">
+<div class="metric"><div class="text-2xl">☀️</div><p class="font-semibold">1. Solar panel</p><p class="text-xs text-gray-400">Makes electrical energy.</p></div>
+<div class="metric"><div class="text-2xl">🧠</div><p class="font-semibold">2. Charge controller</p><p class="text-xs text-gray-400">Manages battery charging.</p></div>
+<div class="metric"><div class="text-2xl">🔋</div><p class="font-semibold">3. Battery</p><p class="text-xs text-gray-400">Stores energy for later.</p></div>
+<div class="metric"><div class="text-2xl">📱</div><p class="font-semibold">4. Load</p><p class="text-xs text-gray-400">Uses the stored energy.</p></div>
+</div>
+<div class="mt-6 bg-blue-950/30 border border-blue-400/20 rounded-xl p-4"><p class="text-sm text-blue-100"><strong>💡 Beginner tip:</strong> Start with a simple low-power DC project such as USB lights or phone charging. Larger appliances require a different design, larger protection devices, suitable cable sizes, and often an inverter.</p></div>
+</div></section>
 
-<section id="system-overview" class="mb-14">
-  <div class="beginner-card p-6 md:p-8">
-    <h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">🔌 How the System Works</h2>
-    <p class="text-gray-400 mb-6">Think of the system as a controlled path for energy.</p>
-    <div class="grid md:grid-cols-5 gap-3">
-      <div class="wire-box text-center"><div class="text-3xl">☀️</div><p class="font-bold">Solar Panel</p><p class="text-xs text-gray-400">Produces DC power</p></div>
-      <div class="hidden md:flex items-center justify-center text-yellow-400 text-2xl">→</div>
-      <div class="wire-box text-center"><div class="text-3xl">🧠</div><p class="font-bold">Charge Controller</p><p class="text-xs text-gray-400">Controls charging</p></div>
-      <div class="hidden md:flex items-center justify-center text-yellow-400 text-2xl">→</div>
-      <div class="wire-box text-center"><div class="text-3xl">🔋</div><p class="font-bold">Battery</p><p class="text-xs text-gray-400">Stores energy</p></div>
-    </div>
-    <div class="flex justify-center text-orange-500 text-2xl py-3">↓</div>
-    <div class="grid md:grid-cols-3 gap-3">
-      <div class="wire-box"><p class="font-bold text-red-400">Protection</p><p class="text-sm text-gray-400">Fuse/breaker and correctly sized wiring help limit fault current.</p></div>
-      <div class="wire-box"><p class="font-bold text-blue-400">DC-DC Converter</p><p class="text-sm text-gray-400">Converts battery voltage to the voltage your USB/load requires.</p></div>
-      <div class="wire-box"><p class="font-bold text-green-400">Load</p><p class="text-sm text-gray-400">Your light, USB device, or other compatible low-power equipment.</p></div>
-    </div>
-    <div class="mt-5 p-4 rounded-xl bg-red-950/30 border border-red-400/20 text-sm text-red-100">
-      <strong>⚠️ Important:</strong> Never assume a component is safe just because it says “12V.” Check exact voltage/current ratings, battery chemistry, cable size, connectors and protection requirements.
-    </div>
-  </div>
-</section>
+<section id="system-overview" class="mb-14"><div class="beginner-card p-6 md:p-8">
+<h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">🔌 How the System Works</h2><p class="text-gray-400 mb-6">Think of the system as a controlled path for energy.</p>
+<div class="grid md:grid-cols-5 gap-3">
+<div class="wire-box text-center"><div class="text-3xl">☀️</div><p class="font-bold">Solar Panel</p><p class="text-xs text-gray-400">Produces DC power</p></div><div class="hidden md:flex items-center justify-center text-yellow-400 text-2xl">→</div>
+<div class="wire-box text-center"><div class="text-3xl">🧠</div><p class="font-bold">Charge Controller</p><p class="text-xs text-gray-400">Controls charging</p></div><div class="hidden md:flex items-center justify-center text-yellow-400 text-2xl">→</div>
+<div class="wire-box text-center"><div class="text-3xl">🔋</div><p class="font-bold">Battery</p><p class="text-xs text-gray-400">Stores energy</p></div></div>
+<div class="flex justify-center text-orange-500 text-2xl py-3">↓</div>
+<div class="grid md:grid-cols-3 gap-3"><div class="wire-box"><p class="font-bold text-red-400">Protection</p><p class="text-sm text-gray-400">Fuse/breaker and correctly sized wiring help limit fault current.</p></div><div class="wire-box"><p class="font-bold text-blue-400">DC-DC Converter</p><p class="text-sm text-gray-400">Converts battery voltage to the voltage your USB/load requires.</p></div><div class="wire-box"><p class="font-bold text-green-400">Load</p><p class="text-sm text-gray-400">Your light, USB device, or other compatible low-power equipment.</p></div></div>
+<div class="mt-5 p-4 rounded-xl bg-red-950/30 border border-red-400/20 text-sm text-red-100"><strong>⚠️ Important:</strong> Never assume a component is safe just because it says “12V.” Check exact voltage/current ratings, battery chemistry, cable size, connectors and protection requirements.</div>
+</div></section>
 
-<section id="sizing-guide" class="mb-14">
-  <div class="beginner-card p-6 md:p-8">
-    <div class="flex flex-col md:flex-row md:justify-between gap-3 mb-6">
-      <div><h2 class="text-2xl md:text-3xl font-bold text-yellow-400">🧮 Beginner Sizing Calculator</h2><p class="text-gray-400 mt-1">A simple educational estimate.</p></div>
-      <span class="info-chip">Educational estimate</span>
-    </div>
-    <div class="grid lg:grid-cols-2 gap-6">
-      <div class="space-y-4">
-        <label class="block"><span class="text-sm font-semibold">Device power (watts)</span><input id="calcWatts" type="number" min="1" value="10" class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700"></label>
-        <label class="block"><span class="text-sm font-semibold">Hours used per day</span><input id="calcHours" type="number" min=".1" step=".1" value="4" class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700"></label>
-        <label class="block"><span class="text-sm font-semibold">Peak-sun-hours/day</span><input id="calcSun" type="number" min="1" step=".5" value="4" class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700"></label>
-        <label class="block"><span class="text-sm font-semibold">System voltage</span><select id="calcVoltage" class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700"><option value="12">12V</option><option value="24">24V</option></select></label>
-        <button onclick="calculateSolar()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 rounded-lg"><i class="fa-solid fa-calculator mr-2"></i>Calculate Estimate</button>
-      </div>
-      <div class="metric">
-        <h3 class="text-xl font-bold mb-4">Your estimate</h3>
-        <div class="grid sm:grid-cols-2 gap-3">
-          <div class="metric"><p class="text-xs text-gray-500">Daily energy</p><p id="calcDaily" class="text-xl font-bold text-yellow-400">40 Wh</p></div>
-          <div class="metric"><p class="text-xs text-gray-500">Panel estimate</p><p id="calcPanel" class="text-xl font-bold text-yellow-400">13 W+</p></div>
-          <div class="metric"><p class="text-xs text-gray-500">Battery estimate</p><p id="calcBattery" class="text-xl font-bold text-yellow-400">3.3 Ah</p></div>
-          <div class="metric"><p class="text-xs text-gray-500">Load current</p><p id="calcCurrent" class="text-xl font-bold text-yellow-400">0.83 A</p></div>
-        </div>
-        <p class="mt-4 text-sm text-gray-400">Actual sizing depends on losses, usable battery capacity, depth of discharge, weather, wiring, controller limits and desired backup time.</p>
-      </div>
-    </div>
-  </div>
-</section>
+<section id="sizing-guide" class="mb-14"><div class="beginner-card p-6 md:p-8">
+<div class="flex flex-col md:flex-row md:justify-between gap-3 mb-6"><div><h2 class="text-2xl md:text-3xl font-bold text-yellow-400">🧮 Beginner Sizing Calculator</h2><p class="text-gray-400 mt-1">A simple educational estimate.</p></div><span class="info-chip">Educational estimate</span></div>
+<div class="grid lg:grid-cols-2 gap-6"><div class="space-y-4">
+<label class="block"><span class="text-sm font-semibold">Device power (watts)</span><input id="calcWatts" type="number" min="1" value="10" class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700"></label>
+<label class="block"><span class="text-sm font-semibold">Hours used per day</span><input id="calcHours" type="number" min=".1" step=".1" value="4" class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700"></label>
+<label class="block"><span class="text-sm font-semibold">Peak-sun-hours/day</span><input id="calcSun" type="number" min="1" step=".5" value="4" class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700"></label>
+<label class="block"><span class="text-sm font-semibold">System voltage</span><select id="calcVoltage" class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2A2A2A] border border-gray-700"><option value="12">12V</option><option value="24">24V</option></select></label>
+<button onclick="calculateSolar()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 rounded-lg"><i class="fa-solid fa-calculator mr-2"></i>Calculate Estimate</button>
+</div>
+<div class="metric"><h3 class="text-xl font-bold mb-4">Your estimate</h3><div class="grid sm:grid-cols-2 gap-3">
+<div class="metric"><p class="text-xs text-gray-500">Daily energy</p><p id="calcDaily" class="text-xl font-bold text-yellow-400">40 Wh</p></div>
+<div class="metric"><p class="text-xs text-gray-500">Panel estimate</p><p id="calcPanel" class="text-xl font-bold text-yellow-400">13 W+</p></div>
+<div class="metric"><p class="text-xs text-gray-500">Battery estimate</p><p id="calcBattery" class="text-xl font-bold text-yellow-400">3.3 Ah</p></div>
+<div class="metric"><p class="text-xs text-gray-500">Load current</p><p id="calcCurrent" class="text-xl font-bold text-yellow-400">0.83 A</p></div>
+</div><p class="mt-4 text-sm text-gray-400">Actual sizing depends on losses, usable battery capacity, depth of discharge, weather, wiring, controller limits and desired backup time.</p></div></div>
+</div></section>
 
-<section class="mb-16">
-  <div class="bg-[#1A1A1A] border-2 border-orange-500 rounded-2xl p-6">
-    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">🎬 Video Tutorial — How to Build It Properly</h2>
-    <div class="aspect-video w-full rounded-xl overflow-hidden border border-yellow-400/20 mb-6">
-      <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1" title="Solar Power Tutorial" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="grid md:grid-cols-2 gap-4">
-      <div>
-        <h3 class="text-lg font-semibold text-yellow-400 mb-3">📺 More Tutorials</h3>
-        <ul class="space-y-2 text-sm">
-          <li>▶ <a target="_blank" rel="noopener" class="text-orange-400 hover:underline" href="https://www.youtube.com/results?search_query=mini+solar+power+setup+tagalog+tutorial">Mini Solar Setup — Tagalog</a></li>
-          <li>▶ <a target="_blank" rel="noopener" class="text-orange-400 hover:underline" href="https://www.youtube.com/results?search_query=MPPT+charge+controller+wiring+guide">MPPT Wiring Guide</a></li>
-          <li>▶ <a target="_blank" rel="noopener" class="text-orange-400 hover:underline" href="https://www.youtube.com/results?search_query=circuit+breaker+solar+installation">Circuit Breaker Install</a></li>
-          <li>▶ <a target="_blank" rel="noopener" class="text-orange-400 hover:underline" href="https://www.youtube.com/results?search_query=LiFePO4+battery+care+safety">Battery Safety Tips</a></li>
-        </ul>
-      </div>
-      <div class="bg-black/40 p-4 rounded-lg"><h3 class="text-lg font-semibold text-yellow-400 mb-2">💡 Watch First!</h3><p class="text-gray-400 text-sm">Use the visual walkthrough together with the safety notes and build steps.</p></div>
-    </div>
-  </div>
-</section>
+<section class="mb-16"><div class="bg-[#1A1A1A] border-2 border-orange-500 rounded-2xl p-6">
+<h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">🎬 Video Tutorial — How to Build It Properly</h2>
+<div class="aspect-video w-full rounded-xl overflow-hidden border border-yellow-400/20 mb-6"><iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1" title="Solar Power Tutorial" frameborder="0" allowfullscreen></iframe></div>
+<div class="grid md:grid-cols-2 gap-4"><div><h3 class="text-lg font-semibold text-yellow-400 mb-3">📺 More Tutorials</h3><ul class="space-y-2 text-sm">
+<li>▶ <a target="_blank" rel="noopener" class="text-orange-400 hover:underline" href="https://www.youtube.com/results?search_query=mini+solar+power+setup+tagalog+tutorial">Mini Solar Setup — Tagalog</a></li>
+<li>▶ <a target="_blank" rel="noopener" class="text-orange-400 hover:underline" href="https://www.youtube.com/results?search_query=MPPT+charge+controller+wiring+guide">MPPT Wiring Guide</a></li>
+<li>▶ <a target="_blank" rel="noopener" class="text-orange-400 hover:underline" href="https://www.youtube.com/results?search_query=circuit+breaker+solar+installation">Circuit Breaker Install</a></li>
+<li>▶ <a target="_blank" rel="noopener" class="text-orange-400 hover:underline" href="https://www.youtube.com/results?search_query=LiFePO4+battery+care+safety">Battery Safety Tips</a></li>
+</ul></div><div class="bg-black/40 p-4 rounded-lg"><h3 class="text-lg font-semibold text-yellow-400 mb-2">💡 Watch First!</h3><p class="text-gray-400 text-sm">Use the visual walkthrough together with the safety notes and build steps.</p></div></div>
+</div></section>
 
-<section id="components" class="mb-16">
-  <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-yellow-400">🛒 Components & Prices — What Each Part Does</h2>
-  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<section id="components" class="mb-16"><h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-yellow-400">🛒 Components & Prices — What Each Part Does</h2>
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10"><div class="product-img bg-gradient-to-br from-yellow-500 to-orange-600"><i class="fa-solid fa-sun text-6xl text-white/90"></i></div><div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">☀️ Solar Panel (10W–50W)</h3><p class="text-gray-400 text-sm">Converts sunlight into electricity. Monocrystalline panels are commonly used for compact systems.</p><p class="text-orange-400 font-bold text-lg my-4">₱800 – ₱2,500</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=12V%20solar%20panel%20monocrystalline" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div></div>
+<div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10"><div class="product-img bg-gradient-to-br from-green-500 to-emerald-700"><i class="fa-solid fa-battery-full text-6xl text-white/90"></i></div><div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">🔋 LiFePO4 Battery (12V)</h3><p class="text-gray-400 text-sm">Stores energy for later use. Use a compatible charging profile and protection system.</p><p class="text-orange-400 font-bold text-lg my-4">₱1,200 – ₱3,000</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=12V%20LiFePO4%20battery" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div></div>
+<div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10"><div class="product-img bg-gradient-to-br from-blue-500 to-indigo-700"><i class="fa-solid fa-bolt text-6xl text-white/90"></i></div><div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">⚡ MPPT Charge Controller</h3><p class="text-gray-400 text-sm">Controls battery charging and can improve energy harvest when correctly sized and configured.</p><p class="text-orange-400 font-bold text-lg my-4">₱350 – ₱900</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=MPPT%20solar%20charge%20controller%2012V" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div></div>
+<div class="bg-[#1A1A1A] rounded-xl overflow-hidden border-2 border-red-500/50"><div class="product-img bg-gradient-to-br from-red-500 to-rose-700"><i class="fa-solid fa-shield-halved text-6xl text-white/90"></i></div><div class="p-5"><h3 class="font-bold text-xl mb-2 text-red-400">⚡ Circuit Breaker / Fuse</h3><p class="text-gray-400 text-sm">Provides overcurrent protection. Rating must match the actual circuit design.</p><p class="text-orange-400 font-bold text-lg my-4">₱80 – ₱250</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=12V%20DC%20circuit%20breaker%2010A" class="block text-center bg-red-600 text-white font-semibold py-2 rounded-lg">Buy on Shopee</a></div></div>
+<div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10"><div class="product-img bg-gradient-to-br from-purple-500 to-violet-700"><i class="fa-solid fa-plug text-6xl text-white/90"></i></div><div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">🔌 Buck Converter (12V→5V)</h3><p class="text-gray-400 text-sm">Steps battery voltage down to a regulated USB output when correctly configured.</p><p class="text-orange-400 font-bold text-lg my-4">₱80 – ₱250</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=DC%20DC%20buck%20converter%2012V%20to%205V" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div></div>
+<div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10"><div class="product-img bg-gradient-to-br from-pink-500 to-rose-600"><i class="fa-solid fa-ellipsis text-6xl text-white/90"></i></div><div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">🔌 Silicone Wire (18AWG)</h3><p class="text-gray-400 text-sm">Carries electricity. Choose gauge according to current, distance and installation conditions.</p><p class="text-orange-400 font-bold text-lg my-4">₱15 – ₱50 / meter</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=18AWG%20silicone%20wire%20red%20black" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div></div>
+</div></section>
 
-    <div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10">
-      <div class="product-img bg-gradient-to-br from-yellow-500 to-orange-600"><i class="fa-solid fa-sun text-6xl text-white/90"></i></div>
-      <div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">☀️ Solar Panel (10W–50W)</h3><p class="text-gray-400 text-sm">Converts sunlight into electricity. Monocrystalline panels are commonly used for compact systems.</p><p class="text-orange-400 font-bold text-lg my-4">₱800 – ₱2,500</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=12V%20solar%20panel%20monocrystalline" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div>
-    </div>
+<section id="build-guide" class="mb-16"><h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-yellow-400">📖 Step-by-Step Build Guide</h2><div class="bg-[#1A1A1A] rounded-2xl p-6 md:p-8 border border-yellow-400/10"><div class="space-y-8">
+<div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 1 — Prepare All Components</h3><p class="text-gray-300 mt-2">Gather the solar panel, appropriately rated charge controller, battery, overcurrent protection, converter, wires, connectors and switch. <strong class="text-orange-400">Tagalog:</strong> Ihanda ang lahat ng components at siguraduhing compatible.</p></div>
+<div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 2 — Connect Solar Panel to MPPT</h3><p class="text-gray-300 mt-2">Connect the panel to the controller's solar input and verify polarity before connection. <strong class="text-orange-400">Tagalog:</strong> Suriing mabuti ang positive at negative polarity.</p></div>
+<div class="border-l-4 border-red-500 pl-4 bg-red-950/30 p-4 rounded-r-lg"><h3 class="text-xl font-bold text-red-400">⚡ STEP 3 — Install Overcurrent Protection</h3><p class="text-gray-300 mt-2">Install the correctly sized fuse or DC-rated breaker according to the controller, battery, wire size and system design. <strong class="text-red-400">Tagalog:</strong> Huwag basta gumamit ng generic na rating.</p></div>
+<div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 4 — Connect Battery to Controller</h3><p class="text-gray-300 mt-2">Follow the charge controller manufacturer's wiring sequence and polarity markings.</p></div>
+<div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 5 — Test Under Sunlight</h3><p class="text-gray-300 mt-2">Place the panel in sunlight and check the controller's charging indicators and measured voltage.</p></div>
+<div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 6 — Add Buck Converter & Output Devices</h3><p class="text-gray-300 mt-2">Confirm the converter input range and output setting. Measure output before connecting a USB device.</p></div>
+<div class="border-l-4 border-green-500 pl-4 bg-green-950/30 p-4 rounded-r-lg"><h3 class="text-xl font-bold text-green-400">✅ STEP 7 — Secure, Protect & Maintain</h3><p class="text-gray-300 mt-2">Secure wiring, protect components from water, inspect connections and disconnect power before servicing.</p></div>
+</div></div></section>
 
-    <div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10">
-      <div class="product-img bg-gradient-to-br from-green-500 to-emerald-700"><i class="fa-solid fa-battery-full text-6xl text-white/90"></i></div>
-      <div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">🔋 LiFePO4 Battery (12V)</h3><p class="text-gray-400 text-sm">Stores energy for later use. Use a compatible charging profile and protection system.</p><p class="text-orange-400 font-bold text-lg my-4">₱1,200 – ₱3,000</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=12V%20LiFePO4%20battery" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div>
-    </div>
+<section id="safety" class="mb-16"><div class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-6"><h2 class="text-2xl font-bold text-center mb-6 text-amber-400">⚠️ Important Safety Tips</h2>
+<div class="grid md:grid-cols-2 gap-6"><div><h3 class="font-bold text-lg mb-3 text-amber-400">🇬🇧 English</h3><ul class="space-y-2"><li>⚡ Use correctly rated overcurrent protection.</li><li>🔴 Verify polarity before every connection.</li><li>💧 Keep components dry.</li><li>🔥 Use appropriately sized wire.</li><li>🛡️ Disconnect power before wiring or servicing.</li></ul></div><div><h3 class="font-bold text-lg mb-3 text-amber-400">🇵🇭 Tagalog</h3><ul class="space-y-2"><li>⚡ Gumamit ng tamang fuse o breaker.</li><li>🔴 Suriin ang polarity bago magkabit.</li><li>💧 Panatilihing tuyo ang components.</li><li>🔥 Gamitin ang tamang wire size.</li><li>🛡️ I-disconnect ang power bago mag-service.</li></ul></div></div></div></section>
 
-    <div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10">
-      <div class="product-img bg-gradient-to-br from-blue-500 to-indigo-700"><i class="fa-solid fa-bolt text-6xl text-white/90"></i></div>
-      <div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">⚡ MPPT Charge Controller</h3><p class="text-gray-400 text-sm">Controls battery charging and can improve energy harvest when correctly sized and configured.</p><p class="text-orange-400 font-bold text-lg my-4">₱350 – ₱900</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=MPPT%20solar%20charge%20controller%2012V" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div>
-    </div>
+<section class="mb-14"><div class="beginner-card p-6 md:p-8"><div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5"><div><h2 class="text-2xl md:text-3xl font-bold text-yellow-400">✅ Beginner Build Checklist</h2><p class="text-gray-400">Check each item as you complete it.</p></div><div class="w-full md:w-64"><div class="flex justify-between text-xs text-gray-400 mb-1"><span>Progress</span><span id="checkProgressText">0%</span></div><div class="progress-track"><div id="checkProgress" class="progress-fill"></div></div></div></div>
+<div class="grid md:grid-cols-2 gap-3">
+<label class="check-row"><input type="checkbox" class="build-check"><span><strong>Read the safety section</strong><br><small class="text-gray-500">Understand polarity and protection.</small></span></label>
+<label class="check-row"><input type="checkbox" class="build-check"><span><strong>Confirm component ratings</strong><br><small class="text-gray-500">Verify compatibility.</small></span></label>
+<label class="check-row"><input type="checkbox" class="build-check"><span><strong>Prepare correct cable and connectors</strong><br><small class="text-gray-500">Size for current and distance.</small></span></label>
+<label class="check-row"><input type="checkbox" class="build-check"><span><strong>Install overcurrent protection</strong><br><small class="text-gray-500">Follow manufacturer instructions.</small></span></label>
+<label class="check-row"><input type="checkbox" class="build-check"><span><strong>Verify polarity with a meter</strong><br><small class="text-gray-500">Do not rely only on wire color.</small></span></label>
+<label class="check-row"><input type="checkbox" class="build-check"><span><strong>Test with a small load</strong><br><small class="text-gray-500">Confirm stable output.</small></span></label>
+</div></div></section>
 
-    <div class="bg-[#1A1A1A] rounded-xl overflow-hidden border-2 border-red-500/50">
-      <div class="product-img bg-gradient-to-br from-red-500 to-rose-700"><i class="fa-solid fa-shield-halved text-6xl text-white/90"></i></div>
-      <div class="p-5"><h3 class="font-bold text-xl mb-2 text-red-400">⚡ Circuit Breaker / Fuse</h3><p class="text-gray-400 text-sm">Provides overcurrent protection. Rating must match the actual circuit design.</p><p class="text-orange-400 font-bold text-lg my-4">₱80 – ₱250</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=12V%20DC%20circuit%20breaker%2010A" class="block text-center bg-red-600 text-white font-semibold py-2 rounded-lg">Buy on Shopee</a></div>
-    </div>
+<section id="troubleshooting" class="mb-14"><div class="beginner-card p-6 md:p-8"><h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">🔧 Troubleshooting for Beginners</h2><p class="text-gray-400 mb-6">Start with the simplest checks. Disconnect power before changing wiring.</p>
+<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-gray-700 text-left"><th class="p-3 text-yellow-400">Symptom</th><th class="p-3 text-yellow-400">Possible causes</th><th class="p-3 text-yellow-400">Beginner checks</th></tr></thead><tbody class="text-gray-300">
+<tr class="border-b border-gray-800"><td class="p-3 font-semibold">Controller is off</td><td class="p-3">Battery disconnected, protection open, reversed polarity, low battery.</td><td class="p-3">Check manual, battery connection, polarity and protection.</td></tr>
+<tr class="border-b border-gray-800"><td class="p-3 font-semibold">Battery is not charging</td><td class="p-3">Low sunlight, panel issue, controller configuration.</td><td class="p-3">Check panel conditions and controller display.</td></tr>
+<tr class="border-b border-gray-800"><td class="p-3 font-semibold">USB output unstable</td><td class="p-3">Converter overloaded, wrong voltage, poor connection.</td><td class="p-3">Disconnect load and verify converter output.</td></tr>
+<tr><td class="p-3 font-semibold">Fuse/breaker opens repeatedly</td><td class="p-3">Short circuit, overload, wrong rating.</td><td class="p-3">Do not repeatedly reset it; find the fault first.</td></tr>
+</tbody></table></div></div></section>
 
-    <div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10">
-      <div class="product-img bg-gradient-to-br from-purple-500 to-violet-700"><i class="fa-solid fa-plug text-6xl text-white/90"></i></div>
-      <div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">🔌 Buck Converter (12V→5V)</h3><p class="text-gray-400 text-sm">Steps battery voltage down to a regulated USB output when correctly configured.</p><p class="text-orange-400 font-bold text-lg my-4">₱80 – ₱250</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=DC%20DC%20buck%20converter%2012V%20to%205V" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div>
-    </div>
+<section class="mb-14"><div class="beginner-card p-6 md:p-8"><h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-6">📚 Solar Glossary</h2><div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="metric"><b>Volt (V)</b><p class="text-sm text-gray-400 mt-1">Electrical potential.</p></div><div class="metric"><b>Ampere (A)</b><p class="text-sm text-gray-400 mt-1">Electrical current.</p></div><div class="metric"><b>Watt (W)</b><p class="text-sm text-gray-400 mt-1">Power; in simple DC cases watts ≈ volts × amps.</p></div><div class="metric"><b>Watt-hour (Wh)</b><p class="text-sm text-gray-400 mt-1">Energy used or stored over time.</p></div><div class="metric"><b>MPPT</b><p class="text-sm text-gray-400 mt-1">Controller method that tracks a useful panel operating point.</p></div><div class="metric"><b>LiFePO4</b><p class="text-sm text-gray-400 mt-1">Lithium iron phosphate battery chemistry.</p></div>
+</div></div></section>
 
-    <div class="bg-[#1A1A1A] rounded-xl overflow-hidden border border-yellow-400/10">
-      <div class="product-img bg-gradient-to-br from-pink-500 to-rose-600"><i class="fa-solid fa-ellipsis text-6xl text-white/90"></i></div>
-      <div class="p-5"><h3 class="font-bold text-xl mb-2 text-yellow-400">🔌 Silicone Wire (18AWG)</h3><p class="text-gray-400 text-sm">Carries electricity. Choose gauge according to current, distance and installation conditions.</p><p class="text-orange-400 font-bold text-lg my-4">₱15 – ₱50 / meter</p><a target="_blank" rel="noopener" href="https://shopee.ph/search?keyword=18AWG%20silicone%20wire%20red%20black" class="block text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 rounded-lg">Buy on Shopee</a></div>
-    </div>
-  </div>
-</section>
+<section id="faq" class="mb-14"><div class="beginner-card p-6 md:p-8"><h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">❓ Beginner FAQ</h2><p class="text-gray-400 mb-6">Tap a question to expand.</p><div class="space-y-3">
+<div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>Can I connect any 12V panel to any 12V battery?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">No. “12V” is often a nominal system label. Check panel voltage/current, controller input range and battery charging requirements.</div></div>
+<div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>Do I really need a fuse or breaker?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">Overcurrent protection is an important part of a safe design. Exact rating and placement depend on the actual circuit.</div></div>
+<div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>Why can't I use very thin wire?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">Wire that is too small can heat up and cause excessive voltage drop. Size it for current, distance and installation conditions.</div></div>
+<div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>Can this power a refrigerator or air conditioner?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">Not as a simple beginner USB/12V project. Such appliances require properly designed battery, inverter, protection and wiring systems.</div></div>
+<div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>What if something gets hot, smells burnt, or sparks?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">Stop the test and disconnect safely if possible. Do not keep resetting protection. Seek qualified help for damaged or higher-power systems.</div></div>
+</div></div></section>
 
-<section id="build-guide" class="mb-16">
-  <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-yellow-400">📖 Step-by-Step Build Guide</h2>
-  <div class="bg-[#1A1A1A] rounded-2xl p-6 md:p-8 border border-yellow-400/10">
-    <div class="space-y-8">
-      <div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 1 — Prepare All Components</h3><p class="text-gray-300 mt-2">Gather the solar panel, appropriately rated charge controller, battery, overcurrent protection, converter, wires, connectors and switch. <strong class="text-orange-400">Tagalog:</strong> Ihanda ang lahat ng components at siguraduhing compatible.</p></div>
-      <div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 2 — Connect Solar Panel to MPPT</h3><p class="text-gray-300 mt-2">Connect the panel to the controller's solar input and verify polarity before connection. <strong class="text-orange-400">Tagalog:</strong> Suriing mabuti ang positive at negative polarity.</p></div>
-      <div class="border-l-4 border-red-500 pl-4 bg-red-950/30 p-4 rounded-r-lg"><h3 class="text-xl font-bold text-red-400">⚡ STEP 3 — Install Overcurrent Protection</h3><p class="text-gray-300 mt-2">Install the correctly sized fuse or DC-rated breaker according to the controller, battery, wire size and system design. <strong class="text-red-400">Tagalog:</strong> Huwag basta gumamit ng generic na rating.</p></div>
-      <div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 4 — Connect Battery to Controller</h3><p class="text-gray-300 mt-2">Follow the charge controller manufacturer's wiring sequence and polarity markings.</p></div>
-      <div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 5 — Test Under Sunlight</h3><p class="text-gray-300 mt-2">Place the panel in sunlight and check the controller's charging indicators and measured voltage.</p></div>
-      <div class="border-l-4 border-yellow-400 pl-4"><h3 class="text-xl font-bold text-yellow-400">STEP 6 — Add Buck Converter & Output Devices</h3><p class="text-gray-300 mt-2">Confirm the converter input range and output setting. Measure output before connecting a USB device.</p></div>
-      <div class="border-l-4 border-green-500 pl-4 bg-green-950/30 p-4 rounded-r-lg"><h3 class="text-xl font-bold text-green-400">✅ STEP 7 — Secure, Protect & Maintain</h3><p class="text-gray-300 mt-2">Secure wiring, protect components from water, inspect connections and disconnect power before servicing.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="safety" class="mb-16">
-  <div class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-6">
-    <h2 class="text-2xl font-bold text-center mb-6 text-amber-400">⚠️ Important Safety Tips</h2>
-    <div class="grid md:grid-cols-2 gap-6">
-      <div><h3 class="font-bold text-lg mb-3 text-amber-400">🇬🇧 English</h3><ul class="space-y-2"><li>⚡ Use correctly rated overcurrent protection.</li><li>🔴 Verify polarity before every connection.</li><li>💧 Keep components dry.</li><li>🔥 Use appropriately sized wire.</li><li>🛡️ Disconnect power before wiring or servicing.</li></ul></div>
-      <div><h3 class="font-bold text-lg mb-3 text-amber-400">🇵🇭 Tagalog</h3><ul class="space-y-2"><li>⚡ Gumamit ng tamang fuse o breaker.</li><li>🔴 Suriin ang polarity bago magkabit.</li><li>💧 Panatilihing tuyo ang components.</li><li>🔥 Gamitin ang tamang wire size.</li><li>🛡️ I-disconnect ang power bago mag-service.</li></ul></div>
-    </div>
-  </div>
-</section>
-
-<section class="mb-14">
-  <div class="beginner-card p-6 md:p-8">
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5">
-      <div><h2 class="text-2xl md:text-3xl font-bold text-yellow-400">✅ Beginner Build Checklist</h2><p class="text-gray-400">Check each item as you complete it.</p></div>
-      <div class="w-full md:w-64"><div class="flex justify-between text-xs text-gray-400 mb-1"><span>Progress</span><span id="checkProgressText">0%</span></div><div class="progress-track"><div id="checkProgress" class="progress-fill"></div></div></div>
-    </div>
-    <div class="grid md:grid-cols-2 gap-3">
-      <label class="check-row"><input type="checkbox" class="build-check"><span><strong>Read the safety section</strong><br><small class="text-gray-500">Understand polarity and protection.</small></span></label>
-      <label class="check-row"><input type="checkbox" class="build-check"><span><strong>Confirm component ratings</strong><br><small class="text-gray-500">Verify compatibility.</small></span></label>
-      <label class="check-row"><input type="checkbox" class="build-check"><span><strong>Prepare correct cable and connectors</strong><br><small class="text-gray-500">Size for current and distance.</small></span></label>
-      <label class="check-row"><input type="checkbox" class="build-check"><span><strong>Install overcurrent protection</strong><br><small class="text-gray-500">Follow manufacturer instructions.</small></span></label>
-      <label class="check-row"><input type="checkbox" class="build-check"><span><strong>Verify polarity with a meter</strong><br><small class="text-gray-500">Do not rely only on wire color.</small></span></label>
-      <label class="check-row"><input type="checkbox" class="build-check"><span><strong>Test with a small load</strong><br><small class="text-gray-500">Confirm stable output.</small></span></label>
-    </div>
-  </div>
-</section>
-
-<section id="troubleshooting" class="mb-14">
-  <div class="beginner-card p-6 md:p-8">
-    <h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">🔧 Troubleshooting for Beginners</h2>
-    <p class="text-gray-400 mb-6">Start with the simplest checks. Disconnect power before changing wiring.</p>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead><tr class="border-b border-gray-700 text-left"><th class="p-3 text-yellow-400">Symptom</th><th class="p-3 text-yellow-400">Possible causes</th><th class="p-3 text-yellow-400">Beginner checks</th></tr></thead>
-        <tbody class="text-gray-300">
-          <tr class="border-b border-gray-800"><td class="p-3 font-semibold">Controller is off</td><td class="p-3">Battery disconnected, protection open, reversed polarity, low battery.</td><td class="p-3">Check manual, battery connection, polarity and protection.</td></tr>
-          <tr class="border-b border-gray-800"><td class="p-3 font-semibold">Battery is not charging</td><td class="p-3">Low sunlight, panel issue, controller configuration.</td><td class="p-3">Check panel conditions and controller display.</td></tr>
-          <tr class="border-b border-gray-800"><td class="p-3 font-semibold">USB output unstable</td><td class="p-3">Converter overloaded, wrong voltage, poor connection.</td><td class="p-3">Disconnect load and verify converter output.</td></tr>
-          <tr><td class="p-3 font-semibold">Fuse/breaker opens repeatedly</td><td class="p-3">Short circuit, overload, wrong rating.</td><td class="p-3">Do not repeatedly reset it; find the fault first.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<section class="mb-14">
-  <div class="beginner-card p-6 md:p-8">
-    <h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-6">📚 Solar Glossary</h2>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div class="metric"><b>Volt (V)</b><p class="text-sm text-gray-400 mt-1">Electrical potential.</p></div>
-      <div class="metric"><b>Ampere (A)</b><p class="text-sm text-gray-400 mt-1">Electrical current.</p></div>
-      <div class="metric"><b>Watt (W)</b><p class="text-sm text-gray-400 mt-1">Power; in simple DC cases watts ≈ volts × amps.</p></div>
-      <div class="metric"><b>Watt-hour (Wh)</b><p class="text-sm text-gray-400 mt-1">Energy used or stored over time.</p></div>
-      <div class="metric"><b>MPPT</b><p class="text-sm text-gray-400 mt-1">Controller method that tracks a useful panel operating point.</p></div>
-      <div class="metric"><b>LiFePO4</b><p class="text-sm text-gray-400 mt-1">Lithium iron phosphate battery chemistry.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="faq" class="mb-14">
-  <div class="beginner-card p-6 md:p-8">
-    <h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">❓ Beginner FAQ</h2>
-    <p class="text-gray-400 mb-6">Tap a question to expand.</p>
-    <div class="space-y-3">
-      <div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>Can I connect any 12V panel to any 12V battery?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">No. “12V” is often a nominal system label. Check panel voltage/current, controller input range and battery charging requirements.</div></div>
-      <div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>Do I really need a fuse or breaker?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">Overcurrent protection is an important part of a safe design. Exact rating and placement depend on the actual circuit.</div></div>
-      <div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>Why can't I use very thin wire?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">Wire that is too small can heat up and cause excessive voltage drop. Size it for current, distance and installation conditions.</div></div>
-      <div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>Can this power a refrigerator or air conditioner?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">Not as a simple beginner USB/12V project. Such appliances require properly designed battery, inverter, protection and wiring systems.</div></div>
-      <div class="faq-item border border-gray-800 rounded-xl overflow-hidden"><button onclick="toggleFaq(this)" class="w-full flex justify-between text-left p-4 font-semibold"><span>What if something gets hot, smells burnt, or sparks?</span><i class="fa-solid fa-chevron-down faq-icon text-yellow-400"></i></button><div class="faq-answer text-sm text-gray-400">Stop the test and disconnect safely if possible. Do not keep resetting protection. Seek qualified help for damaged or higher-power systems.</div></div>
-    </div>
-  </div>
-</section>
-
-<section class="text-center mb-12">
-  <div class="bg-[#1A1A1A] rounded-2xl p-8 max-w-md mx-auto border border-yellow-400/20">
-    <h3 class="text-xl font-bold mb-4 text-yellow-400">📱 Share This App</h3>
-    <div id="qrcode" class="flex justify-center mb-4"></div>
-    <p class="text-gray-400 text-sm">Scan to open on your phone!</p>
-  </div>
-</section>
-
+<section class="text-center mb-12"><div class="bg-[#1A1A1A] rounded-2xl p-8 max-w-md mx-auto border border-yellow-400/20"><h3 class="text-xl font-bold mb-4 text-yellow-400">📱 Share This App</h3><div id="qrcode" class="flex justify-center mb-4"></div><p class="text-gray-400 text-sm">Scan to open on your phone!</p></div></section>
 </main>
 
-<footer class="bg-[#1A1A1A] border-t border-yellow-400/10 py-8">
-  <div class="container mx-auto px-4 text-center">
-    <p class="text-xl font-bold mb-2 gradient-text">☀️ "Power Your Life — The Sun Is Free!" ☀️</p>
-    <p class="text-gray-400">Mini Solar Guide Web App • Created September 2026</p>
-    <p class="text-gray-500 text-xs max-w-2xl mx-auto mt-3">Educational guide only. Verify component ratings, wiring, protection and installation against exact equipment manuals and applicable requirements.</p>
-  </div>
-</footer>
-</div>
-</div>
+<footer class="bg-[#1A1A1A] border-t border-yellow-400/10 py-8"><div class="container mx-auto px-4 text-center"><p class="text-xl font-bold mb-2 gradient-text">☀️ "Power Your Life — The Sun Is Free!" ☀️</p><p class="text-gray-400">Mini Solar Guide Web App • Created September 2026</p><p class="text-gray-500 text-xs max-w-2xl mx-auto mt-3">Educational guide only. Verify component ratings, wiring, protection and installation against exact equipment manuals and applicable requirements.</p></div></footer>
+</div></div>
 
 <script>
 /* =========================================================
-   FIREBASE CONFIGURATION
-   ========================================================= */
+   FIREBASE CONFIG
+   Project: solar-app-edd21
+   Admin: jfaraon49@gmail.com
+========================================================= */
 const firebaseConfig={
-  apiKey:"AIzaSyCPQ-iN9GQlV0MCAM5Ju82g91Ch65iyJLA",
-  authDomain:"solar-app-edd21.firebaseapp.com",
-  projectId:"solar-app-edd21",
-  storageBucket:"solar-app-edd21.firebasestorage.app",
-  messagingSenderId:"463683269857",
-  appId:"1:463683269857:web:e845196f2c4324b6c2b3a0",
-  measurementId:"G-49PN6J6V7Y"
+ apiKey:"AIzaSyCPQ-iN9GQlV0MCAM5Ju82g91Ch65iyJLA",
+ authDomain:"solar-app-edd21.firebaseapp.com",
+ projectId:"solar-app-edd21",
+ storageBucket:"solar-app-edd21.firebasestorage.app",
+ messagingSenderId:"463683269857",
+ appId:"1:463683269857:web:e845196f2c4324b6c2b3a0",
+ measurementId:"G-49PN6J6V7Y"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth=firebase.auth();
 const db=firebase.firestore();
 const realtimeDB=firebase.database();
 
 const ADMIN_EMAIL="jfaraon49@gmail.com";
 
-let currentUserPresenceRef=null;
-let currentConnectedRef=null;
-let currentPresenceConnectionRef=null;
+let presenceRootRef=null;
+let connectedRef=null;
+let activePresenceConnection=null;
 let adminUsersData=[];
 let adminPresenceData={};
 let stopAdminFirestoreListener=null;
 let stopAdminPresenceListener=null;
+let stopAdminChatListener=null;
+let stopUserChatListener=null;
+let activeAdminChatUid=null;
+let adminChatData={};
+let userChatMessages={};
+let userUnreadCount=0;
 
-/* =========================================================
-   LOADING
-   ========================================================= */
-window.addEventListener("load",()=>{
-  setTimeout(()=>{
-    document.getElementById("loadingScreen").classList.add("hidden");
-  },500);
-});
-
-/* =========================================================
-   AUTH UI
-   ========================================================= */
+/* ---------------- AUTH UI ---------------- */
 function togglePassword(id,eyeId){
-  const input=document.getElementById(id);
-  const eye=document.getElementById(eyeId);
-  if(!input)return;
-  input.type=input.type==="password"?"text":"password";
-  if(eye){
-    eye.classList.toggle("fa-eye");
-    eye.classList.toggle("fa-eye-slash");
-  }
+ const input=document.getElementById(id),eye=document.getElementById(eyeId);
+ if(!input)return;
+ input.type=input.type==="password"?"text":"password";
+ if(eye){eye.classList.toggle("fa-eye");eye.classList.toggle("fa-eye-slash");}
 }
-
-function showLoginForm(){
-  loginForm.classList.remove("hidden");
-  registerForm.classList.add("hidden");
-  resetForm.classList.add("hidden");
-  hideMessage();
-}
-function showRegisterForm(){
-  loginForm.classList.add("hidden");
-  registerForm.classList.remove("hidden");
-  resetForm.classList.add("hidden");
-  hideMessage();
-}
-function showResetForm(){
-  loginForm.classList.add("hidden");
-  registerForm.classList.add("hidden");
-  resetForm.classList.remove("hidden");
-  hideMessage();
-}
+function showLoginForm(){loginForm.classList.remove("hidden");registerForm.classList.add("hidden");resetForm.classList.add("hidden");hideMessage()}
+function showRegisterForm(){loginForm.classList.add("hidden");registerForm.classList.remove("hidden");resetForm.classList.add("hidden");hideMessage()}
+function showResetForm(){loginForm.classList.add("hidden");registerForm.classList.add("hidden");resetForm.classList.remove("hidden");hideMessage()}
 function showMessage(text,error=false){
-  const e=document.getElementById("authMessage");
-  e.textContent=text;
-  e.className="mt-4 text-center p-3 rounded-lg "+(error?"bg-red-900/50 text-red-300":"bg-green-900/50 text-green-300");
+ const e=document.getElementById("authMessage");
+ e.textContent=text;e.className="mt-4 text-center p-3 rounded-lg "+(error?"bg-red-900/50 text-red-300":"bg-green-900/50 text-green-300");
 }
-function hideMessage(){
-  document.getElementById("authMessage").classList.add("hidden");
-}
+function hideMessage(){document.getElementById("authMessage").classList.add("hidden")}
 
 function updateCounter(input,counter){
-  const n=document.getElementById(input).value.length;
-  document.getElementById(counter).textContent=`${n} / 30`;
+ const n=document.getElementById(input).value.length;
+ document.getElementById(counter).textContent=`${n} / 30`;
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
-  ["firstName","lastName"].forEach((id,i)=>{
-    const el=document.getElementById(id);
-    if(el)el.addEventListener("input",()=>updateCounter(id,i?"lastNameCounter":"firstNameCounter"));
-  });
-
-  const p1=document.getElementById("registerPassword");
-  const p2=document.getElementById("confirmPassword");
-  const m=document.getElementById("passwordMatch");
-
-  function match(){
-    if(!p1.value&&!p2.value){
-      m.classList.add("hidden");
-      return;
-    }
-    m.classList.remove("hidden");
-    m.textContent=p1.value===p2.value?"✅ Passwords match!":"❌ Passwords do not match!";
-    m.className="text-sm "+(p1.value===p2.value?"text-green-400":"text-red-400");
-  }
-
-  p1.addEventListener("input",match);
-  p2.addEventListener("input",match);
-
-  document.querySelectorAll(".build-check").forEach(x=>x.addEventListener("change",updateChecklist));
-
-  ["calcWatts","calcHours","calcSun","calcVoltage"].forEach(id=>{
-    const e=document.getElementById(id);
-    if(e){
-      e.addEventListener("input",calculateSolar);
-      e.addEventListener("change",calculateSolar);
-    }
-  });
-
-  calculateSolar();
-  restoreChecklist();
-});
-
-document.addEventListener("click",e=>{
-  const menu=document.getElementById("profileMenu");
-  const button=document.getElementById("profileMenuButton");
-  if(menu && !menu.contains(e.target) && !button?.contains(e.target))closeProfileMenu();
-});
-
-/* =========================================================
-   LOGIN / REGISTER / RESET
-   ========================================================= */
+/* ---------------- LOGIN / REGISTER ---------------- */
 function loginUser(){
-  const email=document.getElementById("loginEmail").value.trim();
-  const pass=document.getElementById("loginPassword").value;
-  if(!email||!pass){
-    showMessage("Fill in all fields!",true);
-    return;
-  }
-  showMessage("Signing in...");
-  auth.signInWithEmailAndPassword(email,pass).catch(e=>showMessage(firebaseError(e),true));
+ const email=document.getElementById("loginEmail").value.trim();
+ const pass=document.getElementById("loginPassword").value;
+ if(!email||!pass)return showMessage("Fill in all fields!",true);
+ auth.signInWithEmailAndPassword(email,pass).catch(e=>showMessage(e.message,true));
 }
 
 function registerUser(){
-  const firstName=document.getElementById("firstName").value.trim();
-  const lastName=document.getElementById("lastName").value.trim();
-  const email=document.getElementById("registerEmail").value.trim();
-  const pass=document.getElementById("registerPassword").value;
-  const confirm=document.getElementById("confirmPassword").value;
-  const birthdate=document.getElementById("birthdate").value;
-  const gender=document.getElementById("gender").value;
+ const firstName=document.getElementById("firstName").value.trim();
+ const lastName=document.getElementById("lastName").value.trim();
+ const email=document.getElementById("registerEmail").value.trim();
+ const pass=document.getElementById("registerPassword").value;
+ const confirm=document.getElementById("confirmPassword").value;
+ const birthdate=document.getElementById("birthdate").value;
+ const gender=document.getElementById("gender").value;
 
-  if(!firstName||!lastName||!email||!pass||!confirm){
-    showMessage("Fill in all required fields!",true);
-    return;
-  }
-  if(firstName.length<2||firstName.length>30){
-    showMessage("First name must be 2–30 characters!",true);
-    return;
-  }
-  if(lastName.length<2||lastName.length>30){
-    showMessage("Last name must be 2–30 characters!",true);
-    return;
-  }
-  if(pass.length<6){
-    showMessage("Password must be 6+ characters!",true);
-    return;
-  }
-  if(pass!==confirm){
-    showMessage("❌ Passwords do not match!",true);
-    return;
-  }
+ if(!firstName||!lastName||!email||!pass||!confirm)return showMessage("Fill in all required fields!",true);
+ if(firstName.length<2||firstName.length>30)return showMessage("First name must be 2–30 characters!",true);
+ if(lastName.length<2||lastName.length>30)return showMessage("Last name must be 2–30 characters!",true);
+ if(pass.length<6)return showMessage("Password must be 6+ characters!",true);
+ if(pass!==confirm)return showMessage("❌ Passwords do not match!",true);
 
-  showMessage("Creating account...");
-
-  auth.createUserWithEmailAndPassword(email,pass)
-    .then(cred=>{
-      return db.collection("users").doc(cred.user.uid).set({
-        firstName:firstName,
-        lastName:lastName,
-        email:email,
-        birthdate:birthdate||null,
-        gender:gender||null,
-        createdAt:firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
-    .then(()=>{
-      showMessage("Account created successfully! ✅");
-    })
-    .catch(e=>showMessage(firebaseError(e),true));
+ auth.createUserWithEmailAndPassword(email,pass)
+ .then(cred=>db.collection("users").doc(cred.user.uid).set({
+   firstName,lastName,email,birthdate:birthdate||null,gender:gender||null,
+   createdAt:firebase.firestore.FieldValue.serverTimestamp()
+ }))
+ .catch(e=>showMessage(e.message,true));
 }
 
 function resetPassword(){
-  const email=document.getElementById("resetEmail").value.trim();
-  if(!email){
-    showMessage("Enter your email!",true);
-    return;
-  }
-  auth.sendPasswordResetEmail(email)
-    .then(()=>showMessage("Reset link sent! Check your email ✅"))
-    .catch(e=>showMessage(firebaseError(e),true));
-}
-
-function firebaseError(e){
-  const code=e?.code||"";
-  const messages={
-    "auth/invalid-credential":"Incorrect email or password.",
-    "auth/invalid-login-credentials":"Incorrect email or password.",
-    "auth/email-already-in-use":"That email is already registered.",
-    "auth/weak-password":"Password is too weak.",
-    "auth/invalid-email":"Please enter a valid email address.",
-    "auth/user-not-found":"No account was found for that email.",
-    "auth/too-many-requests":"Too many attempts. Please try again later."
-  };
-  return messages[code]||e?.message||"Firebase authentication error.";
+ const email=document.getElementById("resetEmail").value.trim();
+ if(!email)return showMessage("Enter your email!",true);
+ auth.sendPasswordResetEmail(email)
+ .then(()=>showMessage("Reset link sent! Check your email ✅"))
+ .catch(e=>showMessage(e.message,true));
 }
 
 /* =========================================================
    REALTIME PRESENCE
-   Each signed-in user writes ONLY to their own UID.
-   Admin reads /presence.
-   ========================================================= */
+   Each browser/tab gets ONE unique connection.
+   The user can write only /presence/{ownUid}.
+   Admin can read /presence.
+========================================================= */
 function startUserPresence(user){
-  stopUserPresence();
-  if(!user)return;
+ stopUserPresence();
+ if(!user)return;
 
-  const uid=user.uid;
+ const uid=user.uid;
+ presenceRootRef=realtimeDB.ref("presence/"+uid);
+ connectedRef=realtimeDB.ref(".info/connected");
 
-  currentUserPresenceRef=realtimeDB.ref("presence/"+uid);
-  currentConnectedRef=realtimeDB.ref(".info/connected");
+ connectedRef.on("value",snap=>{
+   if(snap.val()!==true)return;
 
-  currentConnectedRef.on("value",snap=>{
-    if(snap.val()!==true || !currentUserPresenceRef)return;
+   // Avoid creating duplicate connection listeners for the same connection.
+   const connection=presenceRootRef.child("connections").push();
+   activePresenceConnection=connection;
 
-    const connection=currentUserPresenceRef.child("connections").push();
-    currentPresenceConnectionRef=connection;
+   connection.onDisconnect().remove()
+     .catch(err=>console.error("Presence onDisconnect error:",err));
 
-    connection.onDisconnect().remove().catch(console.error);
+   // Only set lastOnline when THIS connection disappears.
+   connection.child("lastOnline").onDisconnect()
+     .set(firebase.database.ServerValue.TIMESTAMP)
+     .catch(()=>{});
 
-    currentUserPresenceRef.child("lastOnline")
-      .onDisconnect()
-      .set(firebase.database.ServerValue.TIMESTAMP)
-      .catch(console.error);
-
-    currentUserPresenceRef.child("email")
-      .set(user.email||"")
-      .catch(console.error);
-
-    connection.set(true).catch(console.error);
-  });
+   presenceRootRef.child("email").set(user.email||"").catch(()=>{});
+   connection.set(true).catch(err=>console.error("Presence write error:",err));
+ });
 }
 
 function stopUserPresence(){
-  if(currentConnectedRef){
-    currentConnectedRef.off();
-    currentConnectedRef=null;
-  }
-
-  if(currentPresenceConnectionRef){
-    currentPresenceConnectionRef.remove().catch(()=>{});
-    currentPresenceConnectionRef=null;
-  }
-
-  if(currentUserPresenceRef){
-    currentUserPresenceRef.child("lastOnline")
-      .set(firebase.database.ServerValue.TIMESTAMP)
-      .catch(()=>{});
-    currentUserPresenceRef=null;
-  }
+ if(activePresenceConnection){
+   activePresenceConnection.remove().catch(()=>{});
+   activePresenceConnection=null;
+ }
+ if(connectedRef){
+   connectedRef.off();
+   connectedRef=null;
+ }
+ presenceRootRef=null;
 }
 
 /* =========================================================
-   PROFILE + ADMIN PAGE
-   ========================================================= */
-function toggleProfileMenu(){
-  const menu=document.getElementById("profileMenu");
-  if(menu)menu.classList.toggle("hidden");
-}
-function closeProfileMenu(){
-  const menu=document.getElementById("profileMenu");
-  if(menu)menu.classList.add("hidden");
+   REAL-TIME CHAT SUPPORT
+   Database path: /chats/{uid}/messages/{messageId}
+========================================================= */
+function toggleChatSupport(){
+ const panel=document.getElementById("chatSupportPanel");
+ if(!panel)return;
+ panel.classList.toggle("hidden");
+ if(!panel.classList.contains("hidden")){
+   renderUserChatMessages();
+   setTimeout(()=>document.getElementById("userChatInput")?.focus(),100);
+   markUserChatMessagesRead();
+ }
 }
 
+function startUserChat(user){
+ stopUserChat();
+ if(!user)return;
+ const ref=realtimeDB.ref("chats/"+user.uid+"/messages");
+ const handler=snap=>{
+   userChatMessages=snap.val()||{};
+   renderUserChatMessages();
+   const unread=Object.values(userChatMessages).filter(m=>m && m.senderRole==="admin" && m.read!==true).length;
+   userUnreadCount=unread;
+   updateUserChatBadge();
+   if(!document.getElementById("chatSupportPanel")?.classList.contains("hidden"))markUserChatMessagesRead();
+ };
+ ref.on("value",handler,error=>{
+   console.error("User chat read error:",error);
+   const box=document.getElementById("userChatMessages");
+   if(box)box.innerHTML='<div class="text-center text-red-400 text-sm py-10">Chat unavailable. Please try again later.</div>';
+ });
+ stopUserChatListener=()=>ref.off("value",handler);
+}
+
+function stopUserChat(){
+ if(stopUserChatListener){stopUserChatListener();stopUserChatListener=null;}
+ userChatMessages={};
+ userUnreadCount=0;
+ updateUserChatBadge();
+}
+
+function sendUserChatMessage(){
+ const user=auth.currentUser;
+ const input=document.getElementById("userChatInput");
+ if(!user||!input)return;
+ const text=input.value.trim();
+ if(!text)return;
+ if(text.length>1000)return;
+ const ref=realtimeDB.ref("chats/"+user.uid+"/messages").push();
+ ref.set({
+   text,
+   senderUid:user.uid,
+   senderRole:"user",
+   senderEmail:user.email||"",
+   timestamp:firebase.database.ServerValue.TIMESTAMP,
+   read:false
+ }).then(()=>{
+   input.value="";
+ }).catch(err=>{
+   console.error(err);
+   alert("Message could not be sent. Please try again.");
+ });
+}
+
+function markUserChatMessagesRead(){
+ const user=auth.currentUser;
+ if(!user)return;
+ const updates={};
+ Object.entries(userChatMessages||{}).forEach(([id,m])=>{
+   if(m && m.senderRole==="admin" && m.read!==true)updates["chats/"+user.uid+"/messages/"+id+"/read"]=true;
+ });
+ if(Object.keys(updates).length)realtimeDB.ref().update(updates).catch(console.error);
+ userUnreadCount=0;
+ updateUserChatBadge();
+}
+
+function updateUserChatBadge(){
+ const badge=document.getElementById("chatUnreadBadge");
+ if(!badge)return;
+ badge.textContent=userUnreadCount>99?"99+":String(userUnreadCount);
+ badge.classList.toggle("hidden",userUnreadCount<1);
+ badge.classList.toggle("flex",userUnreadCount>0);
+}
+
+function renderUserChatMessages(){
+ const box=document.getElementById("userChatMessages");
+ if(!box)return;
+ const messages=Object.entries(userChatMessages||{}).sort((a,b)=>(a[1]?.timestamp||0)-(b[1]?.timestamp||0));
+ if(!messages.length){
+   box.innerHTML='<div class="text-center text-gray-500 text-sm py-12"><i class="fa-solid fa-comments text-3xl text-yellow-400/40 mb-3 block"></i>Hi! How can we help you with your solar project?</div>';
+   return;
+ }
+ box.innerHTML=messages.map(([id,m])=>{
+   const mine=m.senderRole==="user";
+   return `<div class="flex ${mine?"justify-end":"justify-start"}"><div class="max-w-[82%] px-3 py-2 ${mine?"chat-message-user":"chat-message-admin"}"><p class="text-sm whitespace-pre-wrap break-words">${escapeHTML(m.text||"")}</p><p class="text-[10px] mt-1 ${mine?"text-black/60":"text-gray-500"}">${mine?"You":"SolarStart Support"} · ${formatChatTime(m.timestamp)}</p></div></div>`;
+ }).join("");
+ box.scrollTop=box.scrollHeight;
+}
+
+function formatChatTime(ts){
+ if(!ts)return"now";
+ const d=new Date(ts);
+ if(isNaN(d.getTime()))return"now";
+ return d.toLocaleTimeString("en-PH",{hour:"numeric",minute:"2-digit"});
+}
+
+function startAdminChatListener(){
+ stopAdminChatListenerFn();
+ if(!isAdmin(auth.currentUser))return;
+ const ref=realtimeDB.ref("chats");
+ const handler=snap=>{
+   adminChatData=snap.val()||{};
+   renderAdminChatList();
+   if(activeAdminChatUid)renderAdminChatMessages(activeAdminChatUid);
+ };
+ ref.on("value",handler,error=>{
+   console.error("Admin chat read error:",error);
+   const list=document.getElementById("adminChatList");
+   if(list)list.innerHTML='<div class="p-5 text-center text-red-400 text-sm">Unable to load chats. Check Realtime Database Rules.</div>';
+ });
+ stopAdminChatListener=()=>ref.off("value",handler);
+}
+
+function stopAdminChatListenerFn(){
+ if(stopAdminChatListener){stopAdminChatListener();stopAdminChatListener=null;}
+ adminChatData={};
+ activeAdminChatUid=null;
+}
+
+function renderAdminChatList(){
+ const list=document.getElementById("adminChatList");
+ if(!list)return;
+ const q=(document.getElementById("adminChatSearch")?.value||"").toLowerCase().trim();
+ const users=adminUsersData.filter(u=>{
+   const name=`${u.firstName||""} ${u.lastName||""}`.trim().toLowerCase();
+   const email=(u.email||"").toLowerCase();
+   return (adminChatData[u.uid] && (name.includes(q)||email.includes(q))) || (adminChatData[u.uid] && !q);
+ });
+ const withChats=users.filter(u=>adminChatData[u.uid]);
+ if(!withChats.length){
+   list.innerHTML='<div class="p-5 text-center text-gray-500 text-sm">No conversations yet.<br><span class="text-xs">They will appear when a user sends a message.</span></div>';
+   return;
+ }
+ withChats.sort((a,b)=>getChatLastTime(b.uid)-getChatLastTime(a.uid));
+ list.innerHTML=withChats.map(u=>{
+   const name=`${u.firstName||""} ${u.lastName||""}`.trim()||"User";
+   const msgs=adminChatData[u.uid]?.messages||{};
+   const unread=Object.values(msgs).filter(m=>m && m.senderRole==="user" && m.read!==true).length;
+   const last=getLastChatMessage(msgs);
+   const active=activeAdminChatUid===u.uid;
+   return `<button onclick="openAdminChat('${u.uid}')" class="w-full text-left p-3 border-b border-gray-800 hover:bg-yellow-400/5 ${active?"bg-yellow-400/10":""}"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full ${unread?"bg-yellow-400 animate-pulse":"bg-gray-700"}"></span><span class="font-semibold text-white text-sm truncate flex-1">${escapeHTML(name)}</span>${unread?`<span class="bg-red-500 text-white rounded-full text-[10px] px-2 py-0.5">${unread}</span>`:""}</div><p class="text-xs text-gray-500 truncate mt-1">${escapeHTML(last?.text||"No messages")}</p></button>`;
+ }).join("");
+}
+
+function getLastChatMessage(messages){
+ const arr=Object.values(messages||{}).filter(Boolean).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+ return arr[arr.length-1]||null;
+}
+function getChatLastTime(uid){return getLastChatMessage(adminChatData[uid]?.messages||{})?.timestamp||0;}
+
+function openAdminChat(uid){
+ if(!isAdmin(auth.currentUser))return;
+ activeAdminChatUid=uid;
+ const user=adminUsersData.find(u=>u.uid===uid)||{};
+ const name=`${user.firstName||""} ${user.lastName||""}`.trim()||"User";
+ const header=document.getElementById("adminChatHeader");
+ if(header)header.innerHTML=`<p class="font-bold text-white">${escapeHTML(name)}</p><p class="text-xs text-gray-500">${escapeHTML(user.email||"")}</p>`;
+ document.getElementById("adminChatComposer")?.classList.remove("hidden");
+ renderAdminChatMessages(uid);
+ markAdminChatMessagesRead(uid);
+ renderAdminChatList();
+ setTimeout(()=>document.getElementById("adminChatInput")?.focus(),50);
+}
+
+function renderAdminChatMessages(uid){
+ const box=document.getElementById("adminChatMessages");
+ if(!box)return;
+ const msgs=adminChatData[uid]?.messages||{};
+ const entries=Object.entries(msgs).sort((a,b)=>(a[1]?.timestamp||0)-(b[1]?.timestamp||0));
+ if(!entries.length){box.innerHTML='<div class="h-full flex items-center justify-center text-gray-600 text-sm">No messages yet.</div>';return;}
+ box.innerHTML=entries.map(([id,m])=>{
+   const mine=m.senderRole==="admin";
+   return `<div class="flex ${mine?"justify-end":"justify-start"}"><div class="max-w-[75%] px-3 py-2 ${mine?"chat-message-user":"chat-message-admin"}"><p class="text-sm whitespace-pre-wrap break-words">${escapeHTML(m.text||"")}</p><p class="text-[10px] mt-1 ${mine?"text-black/60":"text-gray-500"}">${mine?"You":"User"} · ${formatChatTime(m.timestamp)}</p></div></div>`;
+ }).join("");
+ box.scrollTop=box.scrollHeight;
+}
+
+function markAdminChatMessagesRead(uid){
+ const msgs=adminChatData[uid]?.messages||{};
+ const updates={};
+ Object.entries(msgs).forEach(([id,m])=>{
+   if(m && m.senderRole==="user" && m.read!==true)updates["chats/"+uid+"/messages/"+id+"/read"]=true;
+ });
+ if(Object.keys(updates).length)realtimeDB.ref().update(updates).catch(console.error);
+}
+
+function sendAdminChatMessage(){
+ const uid=activeAdminChatUid;
+ const input=document.getElementById("adminChatInput");
+ const admin=auth.currentUser;
+ if(!uid||!input||!admin||!isAdmin(admin))return;
+ const text=input.value.trim();
+ if(!text||text.length>1000)return;
+ realtimeDB.ref("chats/"+uid+"/messages").push().set({
+   text,
+   senderUid:admin.uid,
+   senderRole:"admin",
+   senderEmail:admin.email||"",
+   timestamp:firebase.database.ServerValue.TIMESTAMP,
+   read:false
+ }).then(()=>{input.value="";}).catch(err=>{console.error(err);alert("Reply could not be sent.");});
+}
+
+/* ---------------- ADMIN ---------------- */
 function isAdmin(user){
-  return !!(user&&user.email&&user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
+ return !!(user && user.email &&
+   user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
+}
+
+function toggleProfileMenu(){
+ const menu=document.getElementById("profileMenu");
+ if(menu)menu.classList.toggle("hidden");
+}
+function closeProfileMenu(){
+ const menu=document.getElementById("profileMenu");
+ if(menu)menu.classList.add("hidden");
 }
 
 function openAdminPage(){
-  if(!isAdmin(auth.currentUser))return;
-  closeProfileMenu();
-  document.getElementById("adminPage").classList.remove("hidden");
-  document.getElementById("mainContentPage").classList.add("hidden");
-  document.getElementById("adminEmailLabel").textContent=ADMIN_EMAIL;
-  window.scrollTo({top:0,behavior:"smooth"});
-  startAdminDashboard();
+ if(!isAdmin(auth.currentUser))return;
+ closeProfileMenu();
+ document.getElementById("adminPage").classList.remove("hidden");
+ document.getElementById("mainContentPage").classList.add("hidden");
+ document.getElementById("adminEmailLabel").textContent=ADMIN_EMAIL;
+ window.scrollTo({top:0,behavior:"smooth"});
+ startAdminDashboard();
 }
 
 function closeAdminPage(){
-  document.getElementById("adminPage").classList.add("hidden");
-  document.getElementById("mainContentPage").classList.remove("hidden");
-  stopAdminDashboard();
-  window.scrollTo({top:0,behavior:"smooth"});
+ document.getElementById("adminPage").classList.add("hidden");
+ document.getElementById("mainContentPage").classList.remove("hidden");
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function setupAdmin(user){
-  const adminButton=document.getElementById("adminMenuButton");
-
-  if(!isAdmin(user)){
-    adminButton.classList.add("hidden");
-    closeAdminPage();
-    stopAdminDashboard();
-    return;
-  }
-
-  adminButton.classList.remove("hidden");
-  document.getElementById("adminEmailLabel").textContent=ADMIN_EMAIL;
+ const button=document.getElementById("adminMenuButton");
+ if(!isAdmin(user)){
+   button.classList.add("hidden");
+   closeAdminPage();
+   stopAdminDashboard();
+   return;
+ }
+ button.classList.remove("hidden");
+ document.getElementById("adminEmailLabel").textContent=ADMIN_EMAIL;
 }
 
 function showAdminMessage(text,error=true){
-  const el=document.getElementById("adminDataMessage");
-  if(!el)return;
-  el.classList.remove("hidden");
-  el.className="mb-5 p-4 rounded-lg border text-sm "+
-    (error?"bg-red-500/10 border-red-500/30 text-red-300":"bg-green-500/10 border-green-500/30 text-green-300");
-  el.innerHTML=text;
+ const el=document.getElementById("adminDataMessage");
+ if(!el)return;
+ el.className="mb-5 p-4 rounded-lg border text-sm "+
+   (error?"bg-red-500/10 border-red-500/30 text-red-300":"bg-green-500/10 border-green-500/30 text-green-300");
+ el.innerHTML=text;
+ el.classList.remove("hidden");
 }
-
 function hideAdminMessage(){
-  const el=document.getElementById("adminDataMessage");
-  if(el)el.classList.add("hidden");
+ const el=document.getElementById("adminDataMessage");
+ if(el)el.classList.add("hidden");
 }
 
-/* =========================================================
-   ADMIN REALTIME DASHBOARD
-   Firestore -> registered user records
-   Realtime DB -> online/offline presence
-   ========================================================= */
 function startAdminDashboard(){
-  stopAdminDashboard();
+ stopAdminDashboard();
+ if(!isAdmin(auth.currentUser))return;
 
-  if(!isAdmin(auth.currentUser))return;
+ const usersRef=db.collection("users");
+ const presenceRef=realtimeDB.ref("presence");
 
-  const usersRef=db.collection("users");
-  const presenceRef=realtimeDB.ref("presence");
+ const userHandler=snap=>{
+   adminUsersData=[];
+   snap.forEach(doc=>adminUsersData.push({uid:doc.id,...doc.data()}));
+   adminUsersData.sort((a,b)=>getCreatedTime(b.createdAt)-getCreatedTime(a.createdAt));
+   hideAdminMessage();
+   renderAdminUsers();
+ };
 
-  const userHandler=snap=>{
-    adminUsersData=[];
+ const presenceHandler=snap=>{
+   adminPresenceData=snap.val()||{};
+   renderAdminUsers();
+ };
 
-    snap.forEach(doc=>{
-      adminUsersData.push({
-        uid:doc.id,
-        ...doc.data()
-      });
-    });
+ stopAdminFirestoreListener=usersRef.onSnapshot(
+   userHandler,
+   error=>{
+     console.error("Firestore admin read error:",error);
+     showAdminMessage(
+       "<b>Hindi mabasa ang users sa Firestore.</b><br>"+
+       "<span class='text-xs'>"+escapeHTML(error.code||error.message||"Permission denied")+
+       "</span><br><br>"+
+       "Check Firestore Rules and make sure jfaraon49@gmail.com is allowed to read the users collection."
+     );
+     adminUsersData=[];
+     renderAdminUsers();
+   }
+ );
 
-    adminUsersData.sort((a,b)=>{
-      const getTime=v=>{
-        if(v&&typeof v.toMillis==="function")return v.toMillis();
-        if(v&&typeof v.seconds==="number")return v.seconds*1000;
-        if(v)return new Date(v).getTime()||0;
-        return 0;
-      };
-      return getTime(b.createdAt)-getTime(a.createdAt);
-    });
-
-    hideAdminMessage();
-    renderAdminUsers();
-  };
-
-  const presenceHandler=snap=>{
-    adminPresenceData=snap.val()||{};
-    renderAdminUsers();
-  };
-
-  stopAdminFirestoreListener=usersRef.onSnapshot(
-    userHandler,
-    error=>{
-      console.error("Admin Firestore read error:",error);
-      showAdminMessage(
-        "<b>Cannot read the users collection.</b><br>"+
-        "<span class='text-xs'>"+escapeHTML(error.code||error.message||"Permission denied")+"</span><br><br>"+
-        "Publish the Firestore rules included below and make sure you are signed in as "+escapeHTML(ADMIN_EMAIL)+"."
-      );
-      adminUsersData=[];
-      renderAdminUsers();
-    }
-  );
-
-  presenceRef.on(
-    "value",
-    presenceHandler,
-    error=>{
-      console.error("Admin presence error:",error);
-      showAdminMessage(
-        "Realtime presence is unavailable.<br><span class='text-xs'>"+
-        escapeHTML(error.message||"Check Realtime Database Rules.")+
-        "</span>"
-      );
-    }
-  );
-
-  stopAdminPresenceListener=()=>{
-    presenceRef.off("value",presenceHandler);
-  };
+ presenceRef.on("value",presenceHandler,error=>{
+   console.error("Realtime Database admin read error:",error);
+   showAdminMessage(
+     "Realtime presence is unavailable. Check that Realtime Database is enabled and its rules allow the admin email to read /presence."
+   );
+ });
+ stopAdminPresenceListener=()=>presenceRef.off("value",presenceHandler);
 }
 
 function stopAdminDashboard(){
-  if(stopAdminFirestoreListener){
-    stopAdminFirestoreListener();
-    stopAdminFirestoreListener=null;
-  }
+ stopAdminChatListenerFn();
+ if(stopAdminFirestoreListener){
+   stopAdminFirestoreListener();
+   stopAdminFirestoreListener=null;
+ }
+ if(stopAdminPresenceListener){
+   stopAdminPresenceListener();
+   stopAdminPresenceListener=null;
+ }
+ adminUsersData=[];
+ adminPresenceData={};
+}
 
-  if(stopAdminPresenceListener){
-    stopAdminPresenceListener();
-    stopAdminPresenceListener=null;
-  }
-
-  adminUsersData=[];
-  adminPresenceData={};
+function getCreatedTime(v){
+ if(v&&typeof v.toMillis==="function")return v.toMillis();
+ if(v&&typeof v.seconds==="number")return v.seconds*1000;
+ if(v)return new Date(v).getTime()||0;
+ return 0;
 }
 
 function renderAdminUsers(){
-  const table=document.getElementById("adminUsersTable");
-  if(!table)return;
+ const table=document.getElementById("adminUsersTable");
+ if(!table)return;
 
-  const input=document.getElementById("adminUserSearch");
-  const search=(input?input.value:"").toLowerCase().trim();
+ const input=document.getElementById("adminUserSearch");
+ const search=(input?input.value:"").toLowerCase().trim();
 
-  const filtered=adminUsersData.filter(u=>{
-    const name=`${u.firstName||""} ${u.lastName||""}`.toLowerCase();
-    return name.includes(search)||(u.email||"").toLowerCase().includes(search);
-  });
+ const filtered=adminUsersData.filter(u=>{
+   const name=`${u.firstName||""} ${u.lastName||""}`.toLowerCase();
+   return name.includes(search)||(u.email||"").toLowerCase().includes(search);
+ });
 
-  let online=0;
-  table.innerHTML="";
+ let online=0;
+ table.innerHTML="";
 
-  if(!filtered.length){
-    table.innerHTML=
-      '<tr><td colspan="6" class="p-8 text-center text-gray-500">'+
-      '<i class="fa-solid fa-users-slash text-3xl mb-2 block"></i>'+
-      (adminUsersData.length?"No users match your search.":"No user documents found in Firestore.")+
-      '</td></tr>';
-  }else{
-    filtered.forEach((u,i)=>{
-      const p=adminPresenceData[u.uid]||{};
-      const connections=p.connections||{};
-      const isOnline=Object.keys(connections).length>0;
+ if(!filtered.length){
+   table.innerHTML=
+     '<tr><td colspan="6" class="p-8 text-center text-gray-500">'+
+     '<i class="fa-solid fa-users-slash text-3xl mb-2 block"></i>'+
+     (adminUsersData.length?"No users match your search.":"No user documents found in Firestore.")+
+     "</td></tr>";
+ }else{
+   filtered.forEach((u,i)=>{
+     const p=adminPresenceData[u.uid]||{};
+     const connections=p.connections||{};
+     const connectionKeys=Object.keys(connections);
+     const isOnline=connectionKeys.length>0;
+     if(isOnline)online++;
 
-      if(isOnline)online++;
+     const name=`${u.firstName||""} ${u.lastName||""}`.trim()||"Unknown User";
+     const tr=document.createElement("tr");
+     tr.className="border-b border-gray-800 hover:bg-white/5";
 
-      const tr=document.createElement("tr");
-      tr.className="border-b border-gray-800 hover:bg-white/5";
+     tr.innerHTML=`
+       <td class="p-3">${i+1}</td>
+       <td class="p-3">
+         <div class="font-semibold text-white">${escapeHTML(name)}</div>
+         <div class="text-xs text-gray-600">${escapeHTML(u.uid)}</div>
+       </td>
+       <td class="p-3 text-gray-300">${escapeHTML(u.email||"")}</td>
+       <td class="p-3 text-gray-400">${escapeHTML(u.gender||"—")}</td>
+       <td class="p-3">
+         ${isOnline
+           ? '<span class="inline-flex items-center gap-2 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Online</span>'
+           : '<span class="inline-flex items-center gap-2 text-gray-500"><span class="w-2 h-2 rounded-full bg-gray-600"></span>Offline</span>'}
+       </td>
+       <td class="p-3 text-gray-400">${getLastSeenText(p)}</td>`;
+     table.appendChild(tr);
+   });
+ }
 
-      const name=`${u.firstName||""} ${u.lastName||""}`.trim()||"Unknown User";
+ document.getElementById("adminTotalUsers").textContent=adminUsersData.length;
+ document.getElementById("adminOnlineUsers").textContent=online;
+ document.getElementById("adminOfflineUsers").textContent=Math.max(0,adminUsersData.length-online);
+}
 
-      tr.innerHTML=`
-        <td class="p-3">${i+1}</td>
-        <td class="p-3">
-          <div class="font-semibold text-white">${escapeHTML(name)}</div>
-          <div class="text-xs text-gray-600">${escapeHTML(u.uid)}</div>
-        </td>
-        <td class="p-3 text-gray-300">${escapeHTML(u.email||"")}</td>
-        <td class="p-3 text-gray-400">${escapeHTML(u.gender||"—")}</td>
-        <td class="p-3">
-          ${
-            isOnline
-            ? '<span class="inline-flex items-center gap-2 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Online</span>'
-            : '<span class="inline-flex items-center gap-2 text-gray-500"><span class="w-2 h-2 rounded-full bg-gray-600"></span>Offline</span>'
-          }
-        </td>
-        <td class="p-3 text-gray-400">${p.lastOnline?formatLastSeen(p.lastOnline):"Never"}</td>
-      `;
+function getLastSeenText(p){
+ if(!p)return"Never";
+ if(p.lastOnline)return formatLastSeen(p.lastOnline);
 
-      table.appendChild(tr);
-    });
-  }
-
-  document.getElementById("adminTotalUsers").textContent=adminUsersData.length;
-  document.getElementById("adminOnlineUsers").textContent=online;
-  document.getElementById("adminOfflineUsers").textContent=Math.max(0,adminUsersData.length-online);
+ // If the user is online, the timestamp may not exist yet.
+ if(p.connections && Object.keys(p.connections).length)return"Online now";
+ return"Never";
 }
 
 function formatLastSeen(ts){
-  const d=new Date(ts);
-  if(isNaN(d.getTime()))return"Unknown";
-  return d.toLocaleString("en-PH",{dateStyle:"medium",timeStyle:"short"});
+ const d=new Date(ts);
+ if(isNaN(d.getTime()))return"Unknown";
+ return d.toLocaleString("en-PH",{dateStyle:"medium",timeStyle:"short"});
 }
 
 function escapeHTML(v){
-  return String(v??"")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+ return String(v??"")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
 }
 
 function logoutUser(){
-  stopUserPresence();
-  auth.signOut().catch(console.error);
+ stopUserPresence();
+ auth.signOut().catch(console.error);
 }
 
-/* =========================================================
-   AUTH STATE
-   ========================================================= */
+/* ---------------- AUTH STATE ---------------- */
 auth.onAuthStateChanged(user=>{
-  if(user){
-    document.getElementById("authScreen").classList.add("hidden");
-    document.getElementById("mainApp").classList.remove("hidden");
-    document.getElementById("userEmail").textContent=user.email||"";
+ if(user){
+   document.getElementById("authScreen").classList.add("hidden");
+   document.getElementById("mainApp").classList.remove("hidden");
+   document.getElementById("userEmail").textContent=user.email||"";
 
-    startUserPresence(user);
-    setupAdmin(user);
+   startUserPresence(user);
+   startUserChat(user);
+   setupAdmin(user);
 
-    db.collection("users").doc(user.uid).get()
-      .then(doc=>{
-        const d=doc.exists?doc.data():{};
-        const fullName=`${d.firstName||""} ${d.lastName||""}`.trim()||"User";
+   db.collection("users").doc(user.uid).get()
+   .then(doc=>{
+     const d=doc.exists?doc.data():{};
+     const fullName=`${d.firstName||""} ${d.lastName||""}`.trim()||"User";
+     document.getElementById("profileName").textContent=fullName;
+     document.getElementById("menuUserName").textContent=fullName;
+     document.getElementById("menuUserEmail").textContent=user.email||"";
+   })
+   .catch(err=>console.error("Profile read error:",err));
 
-        document.getElementById("profileName").textContent=fullName;
-        document.getElementById("menuUserName").textContent=fullName;
-        document.getElementById("menuUserEmail").textContent=user.email||"";
-      })
-      .catch(console.error);
-
-    generateQRCode();
-
-    if(isAdmin(user)){
-      /* The admin dashboard is intentionally NOT opened automatically. */
-      document.getElementById("adminMenuButton").classList.remove("hidden");
-    }
-  }else{
-    stopUserPresence();
-    stopAdminDashboard();
-
-    document.getElementById("mainApp").classList.add("hidden");
-    document.getElementById("authScreen").classList.remove("hidden");
-    document.getElementById("adminPage").classList.add("hidden");
-    document.getElementById("mainContentPage").classList.remove("hidden");
-    document.getElementById("adminMenuButton").classList.add("hidden");
-
-    closeProfileMenu();
-    showLoginForm();
-  }
+   generateQRCode();
+ }else{
+   stopUserPresence();
+   stopUserChat();
+   stopAdminDashboard();
+   document.getElementById("mainApp").classList.add("hidden");
+   document.getElementById("authScreen").classList.remove("hidden");
+   document.getElementById("adminPage").classList.add("hidden");
+   document.getElementById("mainContentPage").classList.remove("hidden");
+   document.getElementById("adminMenuButton").classList.add("hidden");
+   document.getElementById("chatSupportPanel")?.classList.add("hidden");
+   closeProfileMenu();
+   showLoginForm();
+ }
 });
 
-/* =========================================================
-   QR
-   ========================================================= */
+/* ---------------- QR ---------------- */
 function generateQRCode(){
-  const el=document.getElementById("qrcode");
-  if(!el||typeof QRCode==="undefined")return;
-
-  el.innerHTML="";
-
-  const canvas=document.createElement("canvas");
-
-  QRCode.toCanvas(
-    canvas,
-    window.location.href,
-    {width:200},
-    err=>{
-      if(!err)el.appendChild(canvas);
-    }
-  );
+ const el=document.getElementById("qrcode");
+ if(!el||typeof QRCode==="undefined")return;
+ el.innerHTML="";
+ const canvas=document.createElement("canvas");
+ QRCode.toCanvas(canvas,window.location.href,{width:200},err=>{
+   if(!err)el.appendChild(canvas);
+ });
 }
 
-/* =========================================================
-   CALCULATOR
-   ========================================================= */
+/* ---------------- CALCULATOR ---------------- */
 function calculateSolar(){
-  const watts=Math.max(0,Number(document.getElementById("calcWatts").value)||0);
-  const hours=Math.max(0,Number(document.getElementById("calcHours").value)||0);
-  const sun=Math.max(.1,Number(document.getElementById("calcSun").value)||.1);
-  const voltage=Math.max(1,Number(document.getElementById("calcVoltage").value)||12);
-
-  const daily=watts*hours;
-  const panel=daily?Math.ceil((daily/sun)*1.25):0;
-  const battery=daily?(daily/voltage).toFixed(1):"0.0";
-  const current=watts?(watts/voltage).toFixed(2):"0.00";
-
-  document.getElementById("calcDaily").textContent=`${daily.toFixed(0)} Wh/day`;
-  document.getElementById("calcPanel").textContent=`${panel} W+`;
-  document.getElementById("calcBattery").textContent=`${battery} Ah`;
-  document.getElementById("calcCurrent").textContent=`${current} A`;
+ const watts=Math.max(0,Number(document.getElementById("calcWatts").value)||0);
+ const hours=Math.max(0,Number(document.getElementById("calcHours").value)||0);
+ const sun=Math.max(.1,Number(document.getElementById("calcSun").value)||.1);
+ const voltage=Math.max(1,Number(document.getElementById("calcVoltage").value)||12);
+ const daily=watts*hours;
+ const panel=daily?Math.ceil((daily/sun)*1.25):0;
+ const battery=daily?(daily/voltage).toFixed(1):"0.0";
+ const current=watts?(watts/voltage).toFixed(2):"0.00";
+ document.getElementById("calcDaily").textContent=`${daily.toFixed(0)} Wh/day`;
+ document.getElementById("calcPanel").textContent=`${panel} W+`;
+ document.getElementById("calcBattery").textContent=`${battery} Ah`;
+ document.getElementById("calcCurrent").textContent=`${current} A`;
 }
 
-/* =========================================================
-   CHECKLIST / FAQ
-   ========================================================= */
+/* ---------------- CHECKLIST / FAQ ---------------- */
 function updateChecklist(){
-  const c=[...document.querySelectorAll(".build-check")];
-  const done=c.filter(x=>x.checked).length;
-  const p=c.length?Math.round(done/c.length*100):0;
-
-  document.getElementById("checkProgress").style.width=p+"%";
-  document.getElementById("checkProgressText").textContent=p+"%";
-
-  try{
-    localStorage.setItem("solarChecklist",JSON.stringify(c.map(x=>x.checked)));
-  }catch(e){}
+ const c=[...document.querySelectorAll(".build-check")];
+ const done=c.filter(x=>x.checked).length;
+ const p=c.length?Math.round(done/c.length*100):0;
+ document.getElementById("checkProgress").style.width=p+"%";
+ document.getElementById("checkProgressText").textContent=p+"%";
+ try{localStorage.setItem("solarChecklist",JSON.stringify(c.map(x=>x.checked)))}catch(e){}
 }
 
 function restoreChecklist(){
-  try{
-    const saved=JSON.parse(localStorage.getItem("solarChecklist")||"[]");
-    document.querySelectorAll(".build-check").forEach((x,i)=>{
-      x.checked=saved[i]===true;
-    });
-  }catch(e){}
-  updateChecklist();
+ try{
+   const saved=JSON.parse(localStorage.getItem("solarChecklist")||"[]");
+   document.querySelectorAll(".build-check").forEach((x,i)=>x.checked=saved[i]===true);
+ }catch(e){}
+ updateChecklist();
 }
 
 function toggleFaq(button){
-  const item=button.closest(".faq-item");
-  if(item)item.classList.toggle("open");
+ const item=button.closest(".faq-item");
+ if(item)item.classList.toggle("open");
 }
+
+/* ---------------- STARTUP ---------------- */
+window.addEventListener("load",()=>{
+ setTimeout(()=>document.getElementById("loadingScreen").classList.add("hidden"),500);
+});
+
+document.addEventListener("DOMContentLoaded",()=>{
+ ["firstName","lastName"].forEach((id,i)=>{
+   const el=document.getElementById(id);
+   if(el)el.addEventListener("input",()=>updateCounter(id,i?"lastNameCounter":"firstNameCounter"));
+ });
+
+ const p1=document.getElementById("registerPassword");
+ const p2=document.getElementById("confirmPassword");
+ const m=document.getElementById("passwordMatch");
+
+ function match(){
+   if(!p1.value&&!p2.value){m.classList.add("hidden");return}
+   m.classList.remove("hidden");
+   m.textContent=p1.value===p2.value?"✅ Passwords match!":"❌ Passwords do not match!";
+   m.className="text-sm "+(p1.value===p2.value?"text-green-400":"text-red-400");
+ }
+ p1.addEventListener("input",match);
+ p2.addEventListener("input",match);
+
+ document.querySelectorAll(".build-check").forEach(x=>x.addEventListener("change",updateChecklist));
+
+ ["calcWatts","calcHours","calcSun","calcVoltage"].forEach(id=>{
+   const e=document.getElementById(id);
+   if(e){
+     e.addEventListener("input",calculateSolar);
+     e.addEventListener("change",calculateSolar);
+   }
+ });
+
+ calculateSolar();
+ restoreChecklist();
+});
+
+document.addEventListener("click",e=>{
+ const menu=document.getElementById("profileMenu");
+ const button=document.getElementById("profileMenuButton");
+ if(menu&&!menu.contains(e.target)&&!button?.contains(e.target))closeProfileMenu();
+});
 </script>
+  
 </body>
 </html>
