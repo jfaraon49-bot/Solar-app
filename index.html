@@ -1399,27 +1399,6 @@ Educational guide only. Verify component ratings, wiring, protection and install
 <div id="solarExtraPages" class="hidden min-h-screen bg-black">
   <div class="sticky top-0 z-40 border-b border-green-500/20 bg-[#111]/95 backdrop-blur">
     <div class="container mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
-      <div class="flex items-center gap-2 mr-auto">
-        <div class="flex items-center gap-2 rounded-full border border-yellow-400/25 bg-yellow-400/10 px-3 py-2 max-w-full">
-          <i class="fa-solid fa-user text-yellow-400" aria-hidden="true"></i>
-          <span id="extraProfileName" class="text-sm font-semibold text-yellow-300 truncate">User</span>
-          <span id="extraUserEmail" class="hidden sm:inline text-xs text-gray-400 truncate max-w-40"></span>
-        </div>
-        <div class="relative">
-          <button type="button" id="extraProfileMenuButton" onclick="toggleExtraProfileMenu()" aria-label="Open user profile menu" aria-expanded="false" class="bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 px-3 py-2 rounded-lg border border-yellow-400/25 transition">
-            <i class="fa-solid fa-user-circle text-lg" aria-hidden="true"></i>
-          </button>
-          <div id="extraProfileMenu" class="hidden absolute right-0 mt-2 w-56 rounded-xl border border-gray-700 bg-[#1A1A1A] shadow-2xl p-2 z-50">
-            <div class="px-3 py-2 border-b border-gray-700 mb-1">
-              <p id="extraMenuUserName" class="font-semibold text-white text-sm">User</p>
-              <p id="extraMenuUserEmail" class="text-xs text-gray-500 truncate"></p>
-            </div>
-            <button id="extraAdminMenuButton" type="button" onclick="closeExtraProfileMenu();openAdminPage()" class="hidden w-full text-left px-3 py-2 rounded-lg text-green-400 hover:bg-green-500/10">
-              <i class="fa-solid fa-shield-halved mr-2" aria-hidden="true"></i>Admin Dashboard
-            </button>
-          </div>
-        </div>
-      </div>
       <button onclick="showSolarPage('home')" class="info-chip">← Main Guide</button>
       <button onclick="showSolarPage('planner')" class="info-chip">🧮 Solar Planner</button>
       <button onclick="showSolarPage('maintenance')" class="info-chip">🧰 Maintenance</button>
