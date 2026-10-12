@@ -309,7 +309,9 @@ button:not(:disabled):hover::after,a[class*="bg-"]:hover::after{opacity:1;animat
     </div>
   </div>
 </section><!-- AUTH --><div id="authScreen"
-     class="min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-gray-900 p-4 hidden">  <div class="w-full max-w-xl"><div class="bg-[#1A1A1A] rounded-2xl p-6 md:p-8 border-2 border-green-500/50 shadow-2xl">
+     class="min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-gray-900 p-4 hidden relative">
+  <button type="button" onclick="backToWelcome()" aria-label="Back to welcome page" class="absolute top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 font-semibold text-white transition duration-300 hover:-translate-x-1 hover:border-green-400/50 hover:bg-green-400/10 focus:outline-none focus:ring-2 focus:ring-green-400"><i class="fa-solid fa-arrow-left"></i><span>Back to Welcome</span></button>
+  <div class="w-full max-w-xl pt-16 sm:pt-12"><div class="bg-[#1A1A1A] rounded-2xl p-6 md:p-8 border-2 border-green-500/50 shadow-2xl">
 
   <div class="text-center mb-8">
     <i class="fa-solid fa-sun text-5xl text-yellow-400 mb-3"></i>
@@ -1505,6 +1507,12 @@ function openAuthScreen(mode){
   document.getElementById("authScreen")?.classList.remove("hidden");
   if(mode==="register") showRegisterForm();
   else showLoginForm();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function backToWelcome(){
+  document.getElementById("authScreen")?.classList.add("hidden");
+  document.getElementById("landingScreen")?.classList.remove("hidden");
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
