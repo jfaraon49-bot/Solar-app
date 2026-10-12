@@ -598,7 +598,30 @@ Admin account:
 </div></div></div><div
   id="adminDataMessage"
   class="hidden mb-5 p-4 rounded-lg border text-sm">
-</div><div class="flex flex-col md:flex-row gap-3 mb-5"><div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 my-6" id="adminSectionTabs">
+  <button type="button" onclick="setAdminPanel('users')" data-admin-tab="users" class="admin-section-tab active px-4 py-3 rounded-xl border border-green-400/40 bg-green-500/10 text-green-300 font-semibold"><i class="fa-solid fa-users mr-2"></i>Users & Online</button>
+  <button type="button" onclick="setAdminPanel('ratings')" data-admin-tab="ratings" class="admin-section-tab px-4 py-3 rounded-xl border border-yellow-400/20 bg-black/20 text-gray-300 font-semibold"><i class="fa-solid fa-star mr-2"></i>Ratings</button>
+  <button type="button" onclick="setAdminPanel('support')" data-admin-tab="support" class="admin-section-tab px-4 py-3 rounded-xl border border-yellow-400/20 bg-black/20 text-gray-300 font-semibold"><i class="fa-solid fa-comments mr-2"></i>Chat Support</button>
+</div>
+<script>
+function setAdminPanel(panel){
+  const panels={users:'adminUsersPanel',ratings:'adminRatingsPage',support:'adminSupportPage'};
+  Object.entries(panels).forEach(([key,id])=>{const el=document.getElementById(id);if(el)el.classList.toggle('hidden',key!==panel);});
+  document.querySelectorAll('[data-admin-tab]').forEach(btn=>{
+    const active=btn.dataset.adminTab===panel;
+    btn.classList.toggle('active',active);
+    btn.classList.toggle('border-green-400/40',active&&panel==='users');
+    btn.classList.toggle('bg-green-500/10',active&&panel==='users');
+    btn.classList.toggle('text-green-300',active&&panel==='users');
+    btn.classList.toggle('border-yellow-400/40',active&&panel!=='users');
+    btn.classList.toggle('bg-yellow-500/10',active&&panel!=='users');
+    btn.classList.toggle('text-yellow-300',active&&panel!=='users');
+    btn.classList.toggle('text-gray-300',!active);
+  });
+}
+</script><div id="adminUsersPanel">
+<div class="flex flex-col md:flex-row gap-3 mb-5"><div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
 
 <input
 id="adminUserSearch"
@@ -620,9 +643,26 @@ Realtime connected
 <td colspan="6" class="p-8 text-center text-gray-500">
 Loading users...
 </td>
-</tr></tbody></table></div><!-- =========================================================
+</tr></tbody></table></div>
+</div>
+<!-- ADMIN WEBSITE RATINGS -->
+<section class="hidden mt-2 beginner-card p-5 md:p-6 border border-yellow-400/20" id="adminRatingsPage">
+<div id="adminRatingsPanel">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+    <div><h3 class="text-xl font-bold text-yellow-400"><i class="fa-solid fa-star mr-2"></i>Website Ratings</h3>
+    <p class="text-sm text-gray-400 mt-1">Ratings and feedback submitted by users</p></div>
+    <div class="flex gap-3">
+      <div class="admin-stat"><p class="text-xs text-gray-500">AVERAGE RATING</p><p id="adminRatingAverage" class="text-2xl font-bold text-yellow-300">— / 5</p></div>
+      <div class="admin-stat"><p class="text-xs text-gray-500">TOTAL RATINGS</p><p id="adminRatingCount" class="text-2xl font-bold text-white">0</p></div>
+    </div>
+  </div>
+  <p id="adminRatingsStatus" class="text-sm text-gray-400 mb-3">Loading ratings…</p>
+  <div class="overflow-x-auto"><table class="w-full text-sm min-w-[560px]"><thead><tr class="border-b border-gray-700 text-left"><th class="p-3 text-yellow-400">User</th><th class="p-3 text-yellow-400">Rating</th><th class="p-3 text-yellow-400">Comment</th><th class="p-3 text-yellow-400">Date</th></tr></thead><tbody id="adminRatingsTable"><tr><td colspan="4" class="p-5 text-center text-gray-500">Loading ratings…</td></tr></tbody></table></div>
+</div>
+</section>
+<!-- =========================================================
      ADMIN CHAT SUPPORT
-========================================================= --><div class="mt-7 border border-yellow-400/15 rounded-2xl overflow-hidden bg-black/20"><div class="p-4 border-b border-gray-800 flex flex-col md:flex-row md:items-center md:justify-between gap-3"><div><h3 class="text-xl font-bold text-yellow-400"><i class="fa-solid fa-comments mr-2"></i>
+========================================================= --><div id="adminSupportPage" class="hidden mt-2"><div class="border border-yellow-400/15 rounded-2xl overflow-hidden bg-black/20"><div class="p-4 border-b border-gray-800 flex flex-col md:flex-row md:items-center md:justify-between gap-3"><div><h3 class="text-xl font-bold text-yellow-400"><i class="fa-solid fa-comments mr-2"></i>
 
 Support Chats
 
@@ -665,7 +705,7 @@ class="px-4 py-3 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 text-
 
 <i class="fa-solid fa-paper-plane"></i>
 
-</button></div></div></div></div><div class="mt-5 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/10 text-xs text-gray-400"><i class="fa-solid fa-circle-info text-yellow-400 mr-1"></i>
+</button></div></div></div></div></div><div class="mt-5 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/10 text-xs text-gray-400"><i class="fa-solid fa-circle-info text-yellow-400 mr-1"></i>
 
 Passwords are never displayed or stored in this dashboard.
 Firebase Authentication manages passwords.
@@ -1339,7 +1379,7 @@ What if something gets hot, smells burnt, or sparks?
 
 </button><div class="faq-answer text-sm text-gray-400">Stop the test and disconnect safely if possible. Do not keep resetting protection. Seek qualified help for damaged or higher-power systems.
 
-</div></div></div></div></section><!-- QR --><section class="text-center mb-12"><div class="bg-[#1A1A1A] rounded-2xl p-8 max-w-md mx-auto border border-yellow-400/20"><h3 class="text-xl font-bold mb-4 text-yellow-400">
+</div></div></div></div></section><!-- USER RATINGS --><section id="appRatings" class="max-w-3xl mx-auto mb-12"><div class="beginner-card p-6 md:p-8"><div class="text-center"><i class="fa-solid fa-star text-yellow-400 text-3xl"></i><h2 class="text-2xl font-bold text-yellow-400 mt-3">Rate SolarStart PH</h2><p class="text-gray-400 mt-2">Share your experience to help us improve this mini solar guide.</p><div class="mt-4 text-lg"><span id="ratingAverage" class="font-bold text-yellow-300">—</span><span class="text-gray-500 text-sm ml-2" id="ratingCount">No ratings yet</span></div></div><div class="mt-6 text-center"><p class="text-sm text-gray-300 mb-3">How would you rate this website?</p><div id="ratingStars" class="flex justify-center gap-2" role="radiogroup" aria-label="Rate this website"><button type="button" class="rating-star text-3xl text-gray-600 hover:text-yellow-400 transition" data-rating="1" aria-label="1 star" onclick="selectAppRating(1)">★</button><button type="button" class="rating-star text-3xl text-gray-600 hover:text-yellow-400 transition" data-rating="2" aria-label="2 stars" onclick="selectAppRating(2)">★</button><button type="button" class="rating-star text-3xl text-gray-600 hover:text-yellow-400 transition" data-rating="3" aria-label="3 stars" onclick="selectAppRating(3)">★</button><button type="button" class="rating-star text-3xl text-gray-600 hover:text-yellow-400 transition" data-rating="4" aria-label="4 stars" onclick="selectAppRating(4)">★</button><button type="button" class="rating-star text-3xl text-gray-600 hover:text-yellow-400 transition" data-rating="5" aria-label="5 stars" onclick="selectAppRating(5)">★</button></div><textarea id="ratingComment" maxlength="500" rows="3" placeholder="Optional comment (max 500 characters)" class="w-full mt-4 p-3 rounded-lg bg-[#222] border border-gray-700 text-white"></textarea><button id="submitRatingButton" type="button" onclick="submitAppRating()" class="mt-4 px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold">Submit rating</button><p id="ratingStatus" class="text-sm text-gray-400 mt-3" aria-live="polite">Sign in to submit your rating.</p></div><div id="recentRatings" class="mt-6 space-y-3"></div></div></section><!-- QR --><section class="text-center mb-12"><div class="bg-[#1A1A1A] rounded-2xl p-8 max-w-md mx-auto border border-yellow-400/20"><h3 class="text-xl font-bold mb-4 text-yellow-400">
 📱 Share This App
 </h3><div
   id="qrcode"
@@ -1359,6 +1399,27 @@ Educational guide only. Verify component ratings, wiring, protection and install
 <div id="solarExtraPages" class="hidden min-h-screen bg-black">
   <div class="sticky top-0 z-40 border-b border-green-500/20 bg-[#111]/95 backdrop-blur">
     <div class="container mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2 mr-auto">
+        <div class="flex items-center gap-2 rounded-full border border-yellow-400/25 bg-yellow-400/10 px-3 py-2 max-w-full">
+          <i class="fa-solid fa-user text-yellow-400" aria-hidden="true"></i>
+          <span id="extraProfileName" class="text-sm font-semibold text-yellow-300 truncate">User</span>
+          <span id="extraUserEmail" class="hidden sm:inline text-xs text-gray-400 truncate max-w-40"></span>
+        </div>
+        <div class="relative">
+          <button type="button" id="extraProfileMenuButton" onclick="toggleExtraProfileMenu()" aria-label="Open user profile menu" aria-expanded="false" class="bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 px-3 py-2 rounded-lg border border-yellow-400/25 transition">
+            <i class="fa-solid fa-user-circle text-lg" aria-hidden="true"></i>
+          </button>
+          <div id="extraProfileMenu" class="hidden absolute right-0 mt-2 w-56 rounded-xl border border-gray-700 bg-[#1A1A1A] shadow-2xl p-2 z-50">
+            <div class="px-3 py-2 border-b border-gray-700 mb-1">
+              <p id="extraMenuUserName" class="font-semibold text-white text-sm">User</p>
+              <p id="extraMenuUserEmail" class="text-xs text-gray-500 truncate"></p>
+            </div>
+            <button id="extraAdminMenuButton" type="button" onclick="closeExtraProfileMenu();openAdminPage()" class="hidden w-full text-left px-3 py-2 rounded-lg text-green-400 hover:bg-green-500/10">
+              <i class="fa-solid fa-shield-halved mr-2" aria-hidden="true"></i>Admin Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
       <button onclick="showSolarPage('home')" class="info-chip">← Main Guide</button>
       <button onclick="showSolarPage('planner')" class="info-chip">🧮 Solar Planner</button>
       <button onclick="showSolarPage('maintenance')" class="info-chip">🧰 Maintenance</button>
@@ -3010,12 +3071,14 @@ function startAdminDashboard(){
   */
 
   startAdminChatListener();
+  startAdminRatingsListener();
 
 }
 
 function stopAdminDashboard(){
 
   stopAdminChatListenerFn();
+  if(stopAdminRatingsListener){stopAdminRatingsListener();stopAdminRatingsListener=null;}
 
   if(stopAdminFirestoreListener){
 
@@ -3340,6 +3403,17 @@ auth.onAuthStateChanged(user=>{
           .getElementById("profileName")
           .textContent=
             fullName;
+
+        const extraProfileName = document.getElementById("extraProfileName");
+        if(extraProfileName) extraProfileName.textContent = fullName;
+        const extraUserEmail = document.getElementById("extraUserEmail");
+        if(extraUserEmail) extraUserEmail.textContent = user.email || "";
+        const extraMenuName = document.getElementById("extraMenuUserName");
+        if(extraMenuName) extraMenuName.textContent = fullName;
+        const extraMenuEmail = document.getElementById("extraMenuUserEmail");
+        if(extraMenuEmail) extraMenuEmail.textContent = user.email || "";
+        const extraAdminButton = document.getElementById("extraAdminMenuButton");
+        if(extraAdminButton) extraAdminButton.classList.toggle("hidden", !isAdmin(user));
 
         document
           .getElementById("menuUserName")
@@ -3843,6 +3917,91 @@ document.addEventListener(
 })();
 
 
+
+// Live admin-only view of user-submitted website ratings.
+function startAdminRatingsListener(){
+  if(!isAdmin(auth.currentUser)) return;
+  if(stopAdminRatingsListener){stopAdminRatingsListener();stopAdminRatingsListener=null;}
+  const table=document.getElementById('adminRatingsTable');
+  const status=document.getElementById('adminRatingsStatus');
+  if(!table||!status)return;
+  status.textContent='Listening for ratings…';
+  stopAdminRatingsListener=db.collection('ratings').limit(200).onSnapshot(snap=>{
+    const rows=[];let sum=0;
+    snap.forEach(doc=>{const r=doc.data()||{};rows.push({...r,_docId:doc.id});sum+=Math.max(0,Math.min(5,Number(r.rating)||0));});
+    rows.sort((a,b)=>{const time=r=>r.createdAt&&typeof r.createdAt.toMillis==='function'?r.createdAt.toMillis():(r.createdAt&&r.createdAt.seconds?r.createdAt.seconds*1000:0);return time(b)-time(a);});
+    const avg=document.getElementById('adminRatingAverage'),count=document.getElementById('adminRatingCount');
+    if(avg)avg.textContent=rows.length?(sum/rows.length).toFixed(1)+' / 5':'— / 5';
+    if(count)count.textContent=String(rows.length);
+    table.innerHTML='';
+    if(!rows.length){table.innerHTML='<tr><td colspan="4" class="p-5 text-center text-gray-500">No ratings have been submitted yet.</td></tr>';status.textContent='Live updates enabled.';return;}
+    rows.forEach(r=>{
+      const tr=document.createElement('tr');tr.className='border-b border-gray-800 align-top';
+      const name=document.createElement('td');name.className='p-3 text-gray-200';name.textContent=r.displayName||r.email||'User';
+      const rating=document.createElement('td');rating.className='p-3 text-yellow-300 whitespace-nowrap';rating.textContent='★'.repeat(Math.max(0,Math.min(5,Number(r.rating)||0)))+' ('+(Number(r.rating)||0)+'/5)';
+      const comment=document.createElement('td');comment.className='p-3 text-gray-300 whitespace-pre-wrap';comment.textContent=r.comment||'—';
+      const date=document.createElement('td');date.className='p-3 text-gray-400 whitespace-nowrap';const d=r.createdAt&&typeof r.createdAt.toDate==='function'?r.createdAt.toDate():(r.createdAt&&r.createdAt.seconds?new Date(r.createdAt.seconds*1000):null);date.textContent=d?d.toLocaleString():'Just submitted';
+      tr.append(name,rating,comment,date);table.appendChild(tr);
+    });
+    status.textContent='Live updates enabled · newest ratings first.';
+  },err=>{
+    console.error('Admin ratings read failed:',err);
+    status.textContent=err.code==='permission-denied'?'Firestore rules are blocking ratings. Add the /ratings/{ratingId} rule from the setup instructions, then Publish.':'Could not load ratings. Check connection and Firestore rules.';
+    table.innerHTML='<tr><td colspan="4" class="p-5 text-center text-red-300">Ratings unavailable.</td></tr>';
+  });
+}
+
+let selectedAppRating = 0;
+let stopAdminRatingsListener = null;
+function selectAppRating(value){selectedAppRating=value;document.querySelectorAll('.rating-star').forEach(btn=>{const active=Number(btn.dataset.rating)<=value;btn.classList.toggle('text-yellow-400',active);btn.classList.toggle('text-gray-600',!active);btn.setAttribute('aria-checked',String(Number(btn.dataset.rating)===value));});}
+async function loadAppRatings(){
+  const avgEl=document.getElementById('ratingAverage'),countEl=document.getElementById('ratingCount'),list=document.getElementById('recentRatings');
+  if(!avgEl||!countEl||!list)return;
+  // Ratings are intentionally readable only by the admin. Regular users should not
+  // query the full collection, because Firestore correctly denies that request.
+  const status=document.getElementById('ratingStatus');
+  if(!isAdmin(auth.currentUser)){
+    avgEl.textContent='—'; countEl.textContent='Ratings collected privately'; list.innerHTML='';
+    if(status)status.textContent=auth.currentUser?'Choose 1–5 stars and submit your rating. Only the admin can view submitted feedback.':'Sign in to submit your rating.';
+    return;
+  }
+  try{
+    const snap=await db.collection('ratings').limit(100).get();
+    let sum=0;const rows=[];
+    snap.forEach(doc=>{const r=doc.data()||{};sum+=Number(r.rating)||0;rows.push(r);});
+    rows.sort((a,b)=>{const ta=a.createdAt&&a.createdAt.toMillis?a.createdAt.toMillis():0;const tb=b.createdAt&&b.createdAt.toMillis?b.createdAt.toMillis():0;return tb-ta;});
+    avgEl.textContent=rows.length?(sum/rows.length).toFixed(1)+' / 5':'—';
+    countEl.textContent=rows.length?rows.length+' rating'+(rows.length===1?'':'s'):'No ratings yet';list.innerHTML='';
+    rows.slice(0,5).forEach(r=>{const card=document.createElement('div');card.className='rounded-xl border border-gray-700 bg-black/20 p-3';const name=document.createElement('p');name.className='font-semibold text-yellow-300';name.textContent=(r.displayName||'User')+' · '+'★'.repeat(Math.max(0,Math.min(5,Number(r.rating)||0)));card.appendChild(name);if(r.comment){const comment=document.createElement('p');comment.className='text-sm text-gray-300 mt-1';comment.textContent=String(r.comment);card.appendChild(comment);}list.appendChild(card);});
+    if(status&&status.textContent.includes('temporarily unavailable'))status.textContent='Choose stars and submit your rating.';
+  }catch(err){console.warn('Ratings could not load:',err);if(countEl)countEl.textContent=err.code==='permission-denied'?'Admin rating reads are blocked by Firestore rules.':'Ratings could not load; check your connection and Firestore rules.';}
+}
+async function submitAppRating(){
+  const user=auth.currentUser,status=document.getElementById('ratingStatus'),button=document.getElementById('submitRatingButton');
+  if(!user){if(status)status.textContent='Please log in before submitting a rating.';return;}
+  if(!selectedAppRating){if(status)status.textContent='Please select 1 to 5 stars.';return;}
+  if(button)button.disabled=true;
+  try{
+    const displayName=(user.displayName||((user.email||'').split('@')[0])||'User').slice(0,80);
+    await db.collection('ratings').doc(user.uid).set({uid:user.uid,displayName,rating:selectedAppRating,comment:(document.getElementById('ratingComment')?.value||'').trim().slice(0,500),createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    if(status)status.textContent='Thank you! Your rating has been saved.';await loadAppRatings();
+  }catch(err){console.error('Rating save failed:',err);if(status)status.textContent=err.code==='permission-denied'?'Firestore rules blocked this save. Add the /ratings/{ratingId} rule and Publish it in Firebase Console.':'Could not save rating ('+(err.code||'network error')+'). Check connection and Firestore rules.';}
+  finally{if(button)button.disabled=false;}
+}
+document.addEventListener('DOMContentLoaded',loadAppRatings);
+
+function toggleExtraProfileMenu(){
+  const menu=document.getElementById('extraProfileMenu');
+  const button=document.getElementById('extraProfileMenuButton');
+  if(!menu)return;
+  menu.classList.toggle('hidden');
+  if(button)button.setAttribute('aria-expanded',String(!menu.classList.contains('hidden')));
+}
+function closeExtraProfileMenu(){
+  document.getElementById('extraProfileMenu')?.classList.add('hidden');
+  document.getElementById('extraProfileMenuButton')?.setAttribute('aria-expanded','false');
+}
+
 function showSolarPage(page){
   const home=document.getElementById('mainContentPage');
   const extras=document.getElementById('solarExtraPages');
@@ -3851,6 +4010,21 @@ function showSolarPage(page){
     extras.classList.add('hidden'); home.classList.remove('hidden');
     window.scrollTo({top:0,behavior:'smooth'}); return;
   }
+  // Keep the signed-in user's identity visible on every extra page.
+  const authUser = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser : null;
+  const mainName = document.getElementById('profileName')?.textContent?.trim() || 'User';
+  const extraName = document.getElementById('extraProfileName');
+  const extraEmail = document.getElementById('extraUserEmail');
+  const email = authUser?.email || document.getElementById('userEmail')?.textContent || '';
+  if(extraName) extraName.textContent = mainName;
+  if(extraEmail) extraEmail.textContent = email;
+  const extraMenuName=document.getElementById('extraMenuUserName');
+  const extraMenuEmail=document.getElementById('extraMenuUserEmail');
+  if(extraMenuName) extraMenuName.textContent=mainName;
+  if(extraMenuEmail) extraMenuEmail.textContent=email;
+  const extraAdminButton=document.getElementById('extraAdminMenuButton');
+  if(extraAdminButton) extraAdminButton.classList.toggle('hidden',!isAdmin(authUser));
+  closeExtraProfileMenu();
   home.classList.add('hidden'); extras.classList.remove('hidden');
   document.querySelectorAll('.solar-extra-page').forEach(el=>el.classList.add('hidden'));
   const target=document.getElementById('solarPage-'+page);
